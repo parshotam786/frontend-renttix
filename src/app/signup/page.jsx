@@ -307,9 +307,9 @@ const Page = () => {
           onSubmit={handleSubmit}
         >
           {({ values, handleChange, handleSubmit, setFieldValue }) => {
-            useEffect(() => {
-              setformValidation(values);
-            }, [values]);
+            // useEffect(() => {
+            //   setformValidation(values);
+            // }, [values]);
             return (
               <Form>
                 {step === 1 && (
