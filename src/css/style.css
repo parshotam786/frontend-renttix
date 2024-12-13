@@ -1,0 +1,66 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap");
+@import "primereact/resources/themes/lara-light-blue/theme.css";
+
+@layer tailwind-base, primereact, tailwind-utilities;
+@layer tailwind-base {
+  @tailwind base;
+}
+@layer base {
+  body {
+    @apply relative z-1 bg-gray-2 font-satoshi text-base font-normal text-dark-5 dark:bg-[#020D1A] dark:text-dark-6;
+  }
+}
+/* globals.css */
+.p-button {
+  @apply border-0 bg-[#F9791D]  font-medium text-white  shadow-md hover:bg-opacity-90;
+}
+.p-highlight {
+  @apply text-[#F9791D];
+}
+.p-checkbox.p-highlight .p-checkbox-box {
+  @apply border-[#F9791D] bg-[#F9791D];
+}
+.p-checkbox {
+  @apply border-[#F9791D];
+}
+.p-checkbox-input {
+  @apply bg-[#F9791D]  hover:border-[#F9791D];
+}
+/* Default state for the radio button box */
+.p-radiobutton .p-radiobutton-box {
+  @apply border-gray-300 bg-white dark:border-gray-700 dark:bg-gray-800;
+}
+
+/* Hover state */
+.p-radiobutton .p-radiobutton-box:hover {
+  @apply border-[#F9791D];
+}
+
+/* Selected/Active (highlighted) state */
+.p-radiobutton.p-highlight .p-radiobutton-box {
+  @apply border-[#F9791D] bg-[#F9791D] text-white;
+}
+
+/* Focus state */
+.p-radiobutton .p-radiobutton-box:focus {
+  @apply outline-none ring-2 ring-[#F9791D] ring-offset-2;
+}
+
+/* Disabled state */
+.p-radiobutton.p-disabled .p-radiobutton-box {
+  @apply cursor-not-allowed opacity-50;
+}
+.p-inputtext {
+  @apply w-full rounded-lg  border-stroke bg-transparent  pl-6 pr-11 font-medium text-dark outline-none focus:border-primary focus-visible:shadow-none dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary;
+}
+.p-inputgroup {
+  @apply w-full rounded-lg  border-stroke bg-transparent  pl-6 pr-11 font-medium text-dark outline-none focus:border-primary focus-visible:shadow-none dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary;
+}
+.p-dropdown {
+  @apply w-full rounded-lg border-stroke  bg-transparent pl-6 pr-11  font-medium text-dark shadow-none outline-none focus-within:border-primary focus:border-primary dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary;
+}
+
+@layer tailwind-utilities {
+  @tailwind components;
+  @tailwind utilities;
+}

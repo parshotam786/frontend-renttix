@@ -1,0 +1,49 @@
+{
+  "compilerOptions": {
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": [
+    "next-env.d.js",
+    "**/*.js",
+    "**/*.jsx",
+    ".next/types/**/*.js",
+    "src/app/forms/form-elements/page.jsx",
+    "src/app/[company]/vendor/signup/page.jsx",
+    "tailwind.config.js",
+    "src/components/Auth/SigninWithPassword.tsx",
+    "src/components/Auth/GoogleSigninButton.tsx",
+    "src/components/Alerts/AlertWarning.jsx",
+    "src/components/Alerts/AlertSuccess.jsx",
+    "src/components/Alerts/AlertError.jsx",
+    "src/app/page.jsx",
+    "src/app/layout.jsx",
+    "src/app/ui-elements/buttons/page.jsx",
+    "src/app/ui-elements/alerts/page.jsx",
+    "src/app/profile/page.jsx",
+    "src/app/pages/settings/page.jsx",
+    "src/app/forms/form-layout/page.jsx",
+    "src/components/Auth/Signin/index.jsx",
+    ".next/types/**/*.jsx",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": ["node_modules"]
+}
