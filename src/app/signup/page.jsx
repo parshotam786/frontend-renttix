@@ -102,7 +102,7 @@ const validationSchema = Yup.object().shape({
   signature: Yup.string().required("Signature is required"),
   name: Yup.string().required("Name is required"),
 });
-const page = () => {
+const Page = () => {
   const [step, setStep] = useState(1);
   const [checked, setChecked] = useState(false);
   const toast = useRef(null);
@@ -977,4 +977,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
