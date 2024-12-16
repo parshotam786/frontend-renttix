@@ -290,10 +290,7 @@ export default function ProductList() {
   const actionBodyTemplate = (rowData) => {
     return (
       <React.Fragment>
-        <i
-          className="pi pi-pen-to-square mr-2"
-          onClick={() => editProduct(rowData)}
-        />
+        <i className="pi pi-pen-to-square mr-2" />
         <i
           className="pi pi-trash ml-2"
           onClick={() => confirmDeleteProduct(rowData)}
