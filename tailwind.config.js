@@ -8,6 +8,9 @@ const config = {
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
     "./node_modules/primereact/**/*.{js,ts,jsx,tsx}",
   ],
+  safelist: [
+    /^p-/, // Safelist all classes starting with `p-` (PrimeReact classes)
+  ],
   darkMode: "class",
   theme: {
     fontFamily: {

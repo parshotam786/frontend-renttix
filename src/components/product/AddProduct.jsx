@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Breadcrumb from "../Breadcrumbs/Breadcrumb";
 import { InputText } from "primereact/inputtext";
 import { useDropzone } from "react-dropzone";
@@ -12,6 +12,7 @@ import { ProgressSpinner } from "primereact/progressspinner";
 import { Dropdown } from "primereact/dropdown";
 import { RadioButton } from "primereact/radiobutton";
 import Link from "next/link";
+import { Toast } from "primereact/toast";
 import { Button } from "primereact/button";
 
 const AddProduct = () => {
@@ -19,17 +20,21 @@ const AddProduct = () => {
   const showstatus = status;
   console.log(showstatus);
   const [minHireData, setminHireData] = useState([]);
+
+  const [categoryValue, setcategoryValue] = useState({});
+  const [subCategoryValue, setSubcategoryValue] = useState({});
+  const [taxClassValue, setTaxClassValue] = useState({});
+  const [rateDefinitionValue, setrateDefinitionValue] = useState({});
+  console.log(categoryValue, "ss");
   const [formData, setFormData] = useState({
     productName: "",
     companyProductName: "",
     productDescription: "",
-    category: "",
-    subCategory: "",
-    taxClass: "",
+    // category: categoryValue._id,
     // minHireTime: "",
     rentPrice: "",
-    rentDuration: "",
-    rateDefinition: "",
+    // rentDuration: "",
+    // rateDefinition: "",
     range: "",
     vat: "",
     rate: "daily",
@@ -42,7 +47,7 @@ const AddProduct = () => {
     width: "",
     height: "",
   });
-  console.log(formData);
+
   const [categories, setCategories] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
   const [taxClass, settaxClass] = useState([]);
@@ -60,7 +65,7 @@ const AddProduct = () => {
   const { user } = useSelector((state) => state?.authReducer);
   const { token } = useSelector((state) => state?.authReducer);
   const BaseURL = process.env.NEXT_PUBLIC_API_URL;
-
+  const toast = useRef(null);
   const id = ["Editor", "Operator"].includes(user?.role)
     ? user?.vendor
     : user?._id;
@@ -86,64 +91,40 @@ const AddProduct = () => {
   });
 
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchInitialData = async () => {
       try {
-        const response = await axios.get(`${BaseURL}/category`);
-        setCategories(response.data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchCategories();
-  }, []);
+        const [categoriesRes, taxClassRes, rateDefRes] = await Promise.all([
+          axios.get(`${BaseURL}/category`),
+          axios.get(`${BaseURL}/tax-classes/product`, {
+            headers: { authorization: `Bearer ${token}` },
+          }),
+          axios.get(`${BaseURL}/rate-definition/list`, {
+            headers: { authorization: `Bearer ${token}` },
+          }),
+        ]);
 
-  useEffect(() => {
-    const fetchTaxClass = async () => {
-      try {
-        const response = await axios.get(`${BaseURL}/tax-classes/product`, {
-          headers: {
-            authorization: `Bearer ${token}`,
-          },
-        });
-        settaxClass(response?.data?.data);
+        setCategories(categoriesRes.data);
+        settaxClass(taxClassRes.data?.data);
+        setminHireData(rateDefRes.data?.data);
       } catch (err) {
         setError(err.message);
       } finally {
         setLoading(false);
       }
     };
-    fetchTaxClass();
-  }, []);
 
-  useEffect(() => {
-    const fetchMiniHire = async () => {
-      try {
-        const response = await axios.get(`${BaseURL}/rate-definition/list`, {
-          headers: {
-            authorization: `Bearer ${token}`,
-          },
-        });
-        setminHireData(response?.data?.data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchMiniHire();
-  }, []);
+    fetchInitialData();
+  }, [token]);
 
   useEffect(() => {
     const fetchSubCategories = async () => {
       const selectedCategory = categories.find(
-        (item) => item._id === formData.category._id,
+        (item) => item._id === categoryValue._id,
       );
       if (selectedCategory) {
         try {
           const response = await axios.get(
-            `${BaseURL}/sub-category?parentId=${selectedCategory._id}`,
+            `${BaseURL}/sub-category?parentId=${categoryValue._id}`,
           );
           setSubCategories(response?.data);
         } catch (err) {
@@ -155,10 +136,10 @@ const AddProduct = () => {
     };
 
     console.log(formData);
-    if (formData.category) {
+    if (categoryValue) {
       fetchSubCategories();
     }
-  }, [formData.category, categories]);
+  }, [categoryValue, categories]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -178,6 +159,12 @@ const AddProduct = () => {
     productData.append("vendorId", id);
 
     productData.append("status", showstatus);
+    productData.append("category", categoryValue._id);
+    productData.append("subCategory", subCategoryValue._id);
+    productData.append("taxClass", taxClassValue._id);
+    if (status != "Sale") {
+      productData.append("rateDefinition", rateDefinitionValue._id);
+    }
 
     files.forEach((file) => {
       productData.append("image", file);
@@ -202,10 +189,10 @@ const AddProduct = () => {
           productName: "",
           companyProductName: "",
           productDescription: "",
-          category: "",
-          taxClass: "",
-          subCategory: "",
-          rateDefinition: "",
+          // category: "",
+          // taxClass: "",
+          // subCategory: "",
+          // rateDefinition: "",
           rentPrice: "",
           rentDuration: "",
           salePrice: "",
@@ -224,6 +211,12 @@ const AddProduct = () => {
 
         setPreviews([]);
         setFiles([]);
+        toast.current.show({
+          severity: "success",
+          summary: "Success",
+          detail: res.data.message,
+          life: 3000,
+        });
         // toast({
         //   title: res.data.message,
         //   status: "success",
@@ -233,6 +226,12 @@ const AddProduct = () => {
         // });
       }
     } catch (error) {
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: error.response.data.message,
+        life: 3000,
+      });
       //   toast({
       //     title: error.response.data.message,
       //     status: "error",
@@ -292,12 +291,12 @@ const AddProduct = () => {
   return (
     <div>
       <Breadcrumb pageName="Add Proudct" />
-
+      <Toast ref={toast} position="top-right" />
       <div class="grid grid-cols-10 gap-4">
         <div class="col-span-2  p-4 ">
           <h3 className="font-bold">Name and Description</h3>
         </div>
-        <div class="col-span-5 bg-white p-4">
+        <div class="col-span-8 bg-white p-4 md:col-span-8 lg:col-span-8 xl:col-span-5">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2">
             <div className="">
               <label className="mt-2.5 block text-[0.9em] font-bold  text-black">
@@ -397,8 +396,8 @@ const AddProduct = () => {
                   Category Type {isRequired()}
                 </label>
                 <Dropdown
-                  value={formData.category}
-                  onChange={handleChange}
+                  value={categoryValue}
+                  onChange={(e) => setcategoryValue(e.value)}
                   options={categories}
                   optionLabel="name"
                   placeholder="Category Type"
@@ -424,8 +423,8 @@ const AddProduct = () => {
                 </label>
 
                 <Dropdown
-                  value={formData.subCategory}
-                  onChange={handleChange}
+                  value={subCategoryValue}
+                  onChange={(e) => setSubcategoryValue(e.value)}
                   options={subCategories}
                   optionLabel="name"
                   placeholder="Sub Category Type"
@@ -491,13 +490,14 @@ const AddProduct = () => {
                           Rate Definition
                         </label>
                       </Link>
+
                       <Dropdown
-                        value={formData.rateDefinition}
-                        onChange={handleChange}
+                        value={rateDefinitionValue}
+                        onChange={(e) => setrateDefinitionValue(e.value)}
                         options={minHireData}
                         optionLabel="name"
-                        placeholder="Select Rate Definiton"
-                        name="rateDefinition"
+                        // placeholder="Select Rate Definiton"
+                        name="rateDefinitionValue"
                         className="md:w-14rem w-full text-[0.9em]"
                         checkmark={true}
                         highlightOnSelect={false}
@@ -604,8 +604,8 @@ const AddProduct = () => {
                 Tax Class
               </Link>
               <Dropdown
-                value={formData.taxClass}
-                onChange={handleChange}
+                value={taxClassValue}
+                onChange={(e) => setTaxClassValue(e.value)}
                 options={taxClass}
                 optionLabel="name"
                 placeholder="Select Tax Class"
@@ -799,12 +799,12 @@ const AddProduct = () => {
         </div>
         <div class="col-span-5  p-4">
           <div className="flex justify-end gap-7 ">
-            <Button className="" onClick={handleSubmit}>
-              Cancel
-            </Button>
-            <Button className="" onClick={handleSubmit}>
-              Save
-            </Button>
+            <div className="">
+              <Button label="Cancel" onClick={handleSubmit} />
+            </div>
+            <div className="">
+              <Button label="Save" onClick={handleSubmit} />
+            </div>
           </div>
         </div>
       </div>

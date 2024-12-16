@@ -1,7 +1,8 @@
 "use client";
 // import "jsvectormap/dist/css/jsvectormap.css";
 // import "flatpickr/dist/flatpickr.min.css";
-import "primereact/resources/themes/lara-light-cyan/theme.css";
+import "primereact/resources/themes/lara-light-blue/theme.css"; // Theme CSS
+import "primereact/resources/primereact.min.css"; // Core CSS
 import "primeicons/primeicons.css";
 
 import "@/css/satoshi.css";
@@ -23,7 +24,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body suppressHydrationWarning={true}>
         <ReduxProvider>
-          <PrimeReactProvider>
+          <PrimeReactProvider value={{ unstyled: false, pt: {} }}>
             {loading ? <Loader /> : children}
           </PrimeReactProvider>
         </ReduxProvider>

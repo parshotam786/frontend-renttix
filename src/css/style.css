@@ -12,10 +12,13 @@
 }
 /* globals.css */
 .p-button {
-  @apply border-0 bg-[#F9791D]  font-medium text-white  shadow-md hover:bg-opacity-90;
+  @apply rounded-md border-[#F9791D] bg-[#F9791D] px-[1.25rem] py-[0.75rem]  font-medium text-white  shadow-md hover:bg-opacity-90;
 }
 .p-highlight {
   @apply text-[#F9791D];
+}
+.p-checkbox-box {
+  @apply border-[#d1d5db] bg-[#d1d5db];
 }
 .p-checkbox.p-highlight .p-checkbox-box {
   @apply border-[#F9791D] bg-[#F9791D];
@@ -28,7 +31,7 @@
 }
 /* Default state for the radio button box */
 .p-radiobutton .p-radiobutton-box {
-  @apply border-gray-300 bg-white dark:border-gray-700 dark:bg-gray-800;
+  @apply border-gray-300 bg-[#d1d5db] dark:border-gray-700 dark:bg-gray-800;
 }
 
 /* Hover state */
@@ -51,15 +54,54 @@
   @apply cursor-not-allowed opacity-50;
 }
 .p-inputtext {
-  @apply w-full rounded-lg  border-stroke bg-transparent  pl-6 pr-11 font-medium text-dark outline-none focus:border-primary focus-visible:shadow-none dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary;
-}
-.p-inputgroup {
-  @apply w-full rounded-lg  border-stroke bg-transparent  pl-6 pr-11 font-medium text-dark outline-none focus:border-primary focus-visible:shadow-none dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary;
-}
-.p-dropdown {
-  @apply w-full rounded-lg border-stroke  bg-transparent pl-6 pr-11  font-medium text-dark shadow-none outline-none focus-within:border-primary focus:border-primary dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary;
+  @apply w-full rounded-md
+     border-[1px] border-[#d1d5db] px-[1.25rem] py-[0.75rem] hover:border-[#F9791D];
 }
 
+.p-inputtext:focus {
+  @apply /* Change to orange (#F9791D) */ border border-[#F9791D] shadow-none
+    ring-[#F9791D]; /* Add orange focus ring */
+}
+
+.p-inputtext:active {
+  @apply /* Highlight on active state */ /* Keep
+    focus   on active */  border-[#F9791D] 
+    ring-[#F9791D]; /* More prominent shadow */
+}
+
+.p-inputtext:disabled {
+  @apply /*    Light gray background for disabled state */ /*
+    Subtle for disabled */ /* Dimmed text
+    color   */ /* Remove */ cursor-not-allowed
+    border     border-gray-200 bg-gray-100 text-gray-400 shadow
+    shadow-none; /* Disabled cursor */
+}
+
+.p-inputtext::placeholder {
+  @apply text-gray-400; /* Placeholder text color */
+}
+
+.p-inputtext:invalid {
+  @apply /* Red for invalid input */ border border-red-500
+    focus:ring-red-500; /* Red ring for invalid input focus */
+}
+
+.p-inputgroup {
+  @apply w-full rounded-lg border-[1px] border-[#d1d5db]  bg-transparent  font-medium text-dark outline-none focus:border-primary focus-visible:shadow-none dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary;
+}
+.p-inputgroup .p-inputtext {
+  @apply border-none;
+}
+
+.p-dropdown {
+  @apply rounded-lg border-[1px] border-[#d1d5db]   bg-transparent   font-medium text-dark shadow-none outline-none focus-within:border-primary focus:border-primary dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary;
+}
+.p-dropdown .p-inputtext {
+  @apply border-none;
+}
+.p-inputgroup .p-inputtext {
+  @apply border-none;
+}
 @layer tailwind-utilities {
   @tailwind components;
   @tailwind utilities;
