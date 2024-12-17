@@ -18,6 +18,8 @@ import { Password } from "primereact/password";
 import { Checkbox } from "primereact/checkbox";
 import { InputTextarea } from "primereact/inputtextarea";
 import CheckboxOne from "@/components/FormElements/Checkboxes/CheckboxOne";
+import { BaseURL } from "../../../utils/baseUrl";
+import useFormValidation from "@/hooks/useFormValidation";
 const StepIndicator = ({ step, currentStep, label }) => (
   <div className="flex cursor-pointer items-center gap-2 pt-10">
     {currentStep > step ? (
@@ -119,8 +121,6 @@ const Page = () => {
   const [formValidation, setformValidation] = useState({});
   console.log(formValidation, "kk");
 
-  const BaseURL = process.env.NEXT_PUBLIC_API_URL;
-
   console.log(address.country, "exist");
   const initialValues = {
     companyName: "",
@@ -189,7 +189,7 @@ const Page = () => {
       console.log(error.response.data.message);
 
       toast.current.show({
-        severity: "danger",
+        severity: "error",
         summary: "Info",
         detail: error.response.data.message,
       });
@@ -206,7 +206,7 @@ const Page = () => {
           `https://api.positionstack.com/v1/forward`,
           {
             params: {
-              access_key: "a0823ca3aff409dc5895af37013b3fdb",
+              access_key: "1c433a0a7564f3a31e7707928cf83a88",
               query: e.target.value,
               limit: 5,
             },
@@ -214,6 +214,11 @@ const Page = () => {
         );
         setLocations(response.data.data);
       } catch (error) {
+        toast.current.show({
+          severity: "error",
+          summary: "Info",
+          detail: error.response.data.error.message,
+        });
         console.error("Error fetching location data:", error);
       }
     } else {
@@ -254,6 +259,7 @@ const Page = () => {
   }
   return (
     <div className="flex">
+      <Toast ref={toast} />
       <div className="h-screen w-[20%] bg-[url('/images/register/sidebar.svg')] bg-cover bg-center">
         <div className="my-7 flex items-center justify-center">
           <Link href="/">
@@ -307,9 +313,7 @@ const Page = () => {
           onSubmit={handleSubmit}
         >
           {({ values, handleChange, handleSubmit, setFieldValue }) => {
-            // useEffect(() => {
-            //   setformValidation(values);
-            // }, [values]);
+            // useFormValidation(values, setformValidation);
             return (
               <Form>
                 {step === 1 && (
