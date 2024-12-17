@@ -23,7 +23,7 @@ import Breadcrumb from "../Breadcrumbs/Breadcrumb";
 import { useRouter } from "next/navigation";
 import { BaseURL } from "../../../utils/baseUrl";
 
-export default function ProductList() {
+export default function OrderList() {
   let emptyProduct = {
     id: null,
     name: "",
@@ -39,7 +39,7 @@ export default function ProductList() {
   const [products, setProducts] = useState([]);
   const [productDialog, setProductDialog] = useState(false);
   const [deleteProductDialog, setDeleteProductDialog] = useState(false);
-  const [deleteProductsDialog, setDeleteProductsDialog] = useState(false);
+  const [deleteOrdersDialog, setDeleteOrdersDialog] = useState(false);
   const [product, setProduct] = useState(emptyProduct);
   const [selectedProducts, setSelectedProducts] = useState(null);
   const [submitted, setSubmitted] = useState(false);
@@ -60,15 +60,11 @@ export default function ProductList() {
 
   useEffect(() => {
     axios
-      .post(
-        `${process.env.NEXT_PUBLIC_API_URL}/product/product-lists`,
-        { vendorId: id },
-        {
-          headers: {
-            authorization: `Bearer ${token}`,
-          },
+      .get(`${BaseURL}/order/get-all-orders`, {
+        headers: {
+          authorization: `Bearer ${token}`,
         },
-      )
+      })
       .then((response) => {
         setProducts(response.data.data);
         setLoading(false);
@@ -77,7 +73,7 @@ export default function ProductList() {
         // setError(error);
         // setLoading(false);
       });
-  }, []);
+  }, [token]);
 
   const formatCurrency = (value) => {
     return value?.toLocaleString("en-US", {
@@ -99,8 +95,8 @@ export default function ProductList() {
     setDeleteProductDialog(false);
   };
 
-  const hideDeleteProductsDialog = () => {
-    setDeleteProductsDialog(false);
+  const hideDeleteOrdersDialog = () => {
+    setDeleteOrdersDialog(false);
   };
 
   const saveProduct = () => {
@@ -148,28 +144,18 @@ export default function ProductList() {
     setDeleteProductDialog(true);
   };
 
-  const deleteProduct = async () => {
-    try {
-      await axios.delete(`${BaseURL}/product/delete-product/${product.id}`, {
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
-      });
-      let _products = products.filter((val) => val.id !== product.id);
-      console.log(product.id);
+  const deleteProduct = () => {
+    let _products = products.filter((val) => val._id !== product._id);
 
-      setProducts(_products);
-      setDeleteProductDialog(false);
-      setProduct(emptyProduct);
-      toast.current.show({
-        severity: "success",
-        summary: "Successful",
-        detail: "Product Deleted",
-        life: 3000,
-      });
-    } catch (error) {
-      console.log(error);
-    }
+    setProducts(_products);
+    setDeleteProductDialog(false);
+    setProduct(emptyProduct);
+    toast.current.show({
+      severity: "success",
+      summary: "Successful",
+      detail: "Order Deleted",
+      life: 3000,
+    });
   };
 
   const findIndexById = (id) => {
@@ -202,14 +188,14 @@ export default function ProductList() {
   };
 
   const confirmDeleteSelected = () => {
-    setDeleteProductsDialog(true);
+    setDeleteOrdersDialog(true);
   };
 
   const deleteSelectedProducts = () => {
     let _products = products.filter((val) => !selectedProducts.includes(val));
 
     setProducts(_products);
-    setDeleteProductsDialog(false);
+    setDeleteOrdersDialog(false);
     setSelectedProducts(null);
     toast.current.show({
       severity: "success",
@@ -301,10 +287,7 @@ export default function ProductList() {
   const actionBodyTemplate = (rowData) => {
     return (
       <React.Fragment>
-        <i
-          onClick={() => router.push(`/product/${rowData.id}`)}
-          className="pi pi-pen-to-square mr-2"
-        />
+        <i className="pi pi-pen-to-square mr-2" />
         <i
           className="pi pi-trash ml-2"
           onClick={() => confirmDeleteProduct(rowData)}
@@ -364,13 +347,13 @@ export default function ProductList() {
       />
     </React.Fragment>
   );
-  const deleteProductsDialogFooter = (
+  const deleteOrdersDialogFooter = (
     <React.Fragment>
       <Button
         label="No"
         icon="pi pi-times"
         outlined
-        onClick={hideDeleteProductsDialog}
+        onClick={hideDeleteOrdersDialog}
       />
       <Button
         label="Yes"
@@ -383,7 +366,7 @@ export default function ProductList() {
 
   return (
     <div>
-      <Breadcrumb pageName="Products" />
+      <Breadcrumb pageName="Proudcts" />
       <Toast ref={toast} />
       <div className="card">
         <Toolbar
@@ -398,7 +381,7 @@ export default function ProductList() {
           value={products}
           selection={selectedProducts}
           onSelectionChange={(e) => setSelectedProducts(e.value)}
-          dataKey="id"
+          dataKey="_id"
           paginator
           rows={10}
           rowsPerPageOptions={[5, 10, 25]}
@@ -414,56 +397,62 @@ export default function ProductList() {
             style={{ minWidth: "12rem" }}
           ></Column> */}
           <Column
-            field="thumbnail"
-            header="Product"
-            body={imageBodyTemplate}
-          ></Column>
-          <Column
-            field="productName"
-            header="Product Name"
-            sortable
-            style={{ minWidth: "16rem" }}
+            field="account"
+            header="Name"
+            // body={imageBodyTemplate}
           ></Column>
 
           <Column
-            field={"rentPrice" ? "rentPrice" : "salePrice"}
-            header="Price"
-            body={priceBodyTemplate}
+            field={"status"}
+            header="Type"
+            body={(item) => {
+              return (
+                <>
+                  <span>Order</span>
+                </>
+              );
+            }}
             sortable
             style={{ minWidth: "8rem" }}
           ></Column>
           <Column
             field="status"
-            header="Category"
+            header="Status"
             sortable
-            style={{ minWidth: "10rem" }}
-          ></Column>
-          <Column
-            field="quantity"
-            header="Quantity"
-            sortable
-            style={{ minWidth: "10rem" }}
-          ></Column>
-          <Column
-            field="minimumRentalPeriod"
-            header="Min Rental Period"
             body={(item) => {
               return (
                 <>
-                  <span>
-                    {item.minimumRentalPeriod}
-                    {item.minimumRentalPeriod >= 1 ? "Days" : "-"}
-                  </span>
+                  <span>Open</span>
                 </>
               );
             }}
+            style={{ minWidth: "10rem" }}
+          ></Column>
+          <Column
+            field="deliveryDate"
+            header="Delivery Date"
+            sortable
+            style={{ minWidth: "10rem" }}
+          ></Column>
+          <Column
+            field="deliveryAddress1"
+            header="Delivery Address"
+            // body={(item) => {
+            //   return (
+            //     <>
+            //       <span>
+            //         {item.minimumRentalPeriod}
+            //         {item.minimumRentalPeriod >= 1 ? "Days" : "-"}
+            //       </span>
+            //     </>
+            //   );
+            // }}
             sortable
             style={{ minWidth: "12rem" }}
           ></Column>
           <Column
-            field="stockStatus"
-            header="Status"
-            body={statusBodyTemplate}
+            field="city"
+            header="Depot"
             sortable
             style={{ minWidth: "12rem" }}
           ></Column>
@@ -619,13 +608,13 @@ export default function ProductList() {
       </Dialog>
 
       <Dialog
-        visible={deleteProductsDialog}
+        visible={deleteOrdersDialog}
         style={{ width: "32rem" }}
         breakpoints={{ "960px": "75vw", "641px": "90vw" }}
         header="Confirm"
         modal
-        footer={deleteProductsDialogFooter}
-        onHide={hideDeleteProductsDialog}
+        footer={deleteOrdersDialogFooter}
+        onHide={hideDeleteOrdersDialog}
       >
         <div className="confirmation-content">
           <i
@@ -633,7 +622,7 @@ export default function ProductList() {
             style={{ fontSize: "2rem" }}
           />
           {product && (
-            <span>Are you sure you want to delete the selected products?</span>
+            <span>Are you sure you want to delete the selected Orders?</span>
           )}
         </div>
       </Dialog>

@@ -4,7 +4,7 @@ import Breadcrumb from "../Breadcrumbs/Breadcrumb";
 import { InputText } from "primereact/inputtext";
 import { useDropzone } from "react-dropzone";
 import useDebounce from "@/hooks/useDebounce";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { InputTextarea } from "primereact/inputtextarea";
@@ -14,8 +14,9 @@ import { RadioButton } from "primereact/radiobutton";
 import Link from "next/link";
 import { Toast } from "primereact/toast";
 import { Button } from "primereact/button";
+import { imageBaseURL } from "../../../utils/baseUrl";
 
-const AddProduct = () => {
+const UpdateProduct = () => {
   const [status, setStatus] = useState("Rental");
   const showstatus = status;
   console.log(showstatus);
@@ -24,8 +25,9 @@ const AddProduct = () => {
   const [categoryValue, setcategoryValue] = useState({});
   const [subCategoryValue, setSubcategoryValue] = useState({});
   const [taxClassValue, setTaxClassValue] = useState({});
+  const [deleteImage, setdeleteImage] = useState([]);
   const [rateDefinitionValue, setrateDefinitionValue] = useState({});
-  console.log(categoryValue, "ss");
+
   const [formData, setFormData] = useState({
     productName: "",
     companyProductName: "",
@@ -60,12 +62,19 @@ const AddProduct = () => {
   const [promptLoader, setpromptLoader] = useState(false);
 
   const router = useRouter();
+  const params = useParams();
   //   const toast = useToast();
   const debouncedSearch = useDebounce(prompt, 500); // Add debounce with a 500ms delay
   const { user } = useSelector((state) => state?.authReducer);
   const { token } = useSelector((state) => state?.authReducer);
   const BaseURL = process.env.NEXT_PUBLIC_API_URL;
   const toast = useRef(null);
+
+  const handleDelete = (id, previews) => {
+    setdeleteImage(previews);
+    setPreviews((prevData) => prevData.filter((item, index) => index !== id));
+  };
+
   const id = ["Editor", "Operator"].includes(user?.role)
     ? user?.vendor
     : user?._id;
@@ -77,19 +86,73 @@ const AddProduct = () => {
       file,
       preview: URL.createObjectURL(file),
     }));
-    setPreviews(newPreviews);
-    setFiles(acceptedFiles.slice(0, 4));
+    setPreviews((prevPreviews) => [...prevPreviews, ...newPreviews]);
+    setFiles((prevFiles) => [...prevFiles, ...acceptedFiles.slice(0, 4)]);
   }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: {
-      "image/*": [],
-    },
+    accept: "image/*",
     multiple: true,
     maxFiles: 4,
   });
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `${BaseURL}/product/product-detail/${params.id}`,
+          {
+            headers: {
+              authorization: `Bearer ${token}`,
+            },
+          },
+        );
+
+        const productData = response?.data?.product;
+
+        // Fill the formData state with fetched product data
+        setFormData({
+          productName: productData?.productName || "",
+          companyProductName: productData?.companyProductName || "",
+          productDescription: productData?.productDescription || "",
+          rentPrice: productData?.rentPrice || "",
+          salePrice: productData?.salePrice || "",
+          range: productData?.range || "",
+          vat: productData?.vat || "",
+          rate: productData?.rate || "daily",
+          quantity: productData?.quantity || 1,
+          lenghtUnit: productData?.lenghtUnit || "cm",
+          weightUnit: productData?.weightUnit || "kg",
+          weight: productData?.weight || "",
+          length: productData?.length || "",
+          width: productData?.width || "",
+          height: productData?.height || "",
+        });
+
+        // Set other related states like category, subcategory, taxClass
+        setcategoryValue(productData?.category || {});
+        setSubcategoryValue(productData?.subCategory || {});
+        setTaxClassValue(productData?.taxClass || {});
+        setrateDefinitionValue(productData?.rateDefinition || {});
+        setStatus(productData?.status || "Rental");
+
+        // Handle image previews
+        setPreviews(
+          productData?.images?.map((image) => ({
+            preview: image,
+          })) || [],
+        );
+      } catch (error) {
+        console.error("Error fetching product data", error);
+        setError(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [params, token]);
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
@@ -166,7 +229,7 @@ const AddProduct = () => {
       productData.append("rateDefinition", rateDefinitionValue._id);
     }
 
-    files.forEach((file) => {
+    files.slice(0, 4).forEach((file) => {
       productData.append("image", file);
     });
 
@@ -175,8 +238,8 @@ const AddProduct = () => {
     }
 
     try {
-      const res = await axios.post(
-        `${BaseURL}/product/add-product`,
+      const res = await axios.put(
+        `${BaseURL}/product/update-product/${id}`,
         productData,
         {
           headers: {
@@ -184,6 +247,7 @@ const AddProduct = () => {
           },
         },
       );
+      router.push("/product-list");
       if (res.data.success) {
         setFormData({
           productName: "",
@@ -247,11 +311,26 @@ const AddProduct = () => {
     return <span className="text-red">*</span>;
   };
 
-  const handleDelete = (index) => {
-    setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
-    setPreviews((prevPreviews) => prevPreviews.filter((_, i) => i !== index));
-  };
-
+  useEffect(() => {
+    const delteProductImage = async () => {
+      try {
+        await axios.delete(
+          `${BaseURL}/product/${id}/image`,
+          {
+            data: { imageUrl: `${deleteImage}` },
+          },
+          {
+            headers: {
+              authorization: `Bearer ${token}`,
+            },
+          },
+        );
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    delteProductImage();
+  }, [deleteImage]);
   useEffect(() => {
     const fetchData = async () => {
       setpromptLoader(true);
@@ -290,7 +369,7 @@ const AddProduct = () => {
   }, [debouncedSearch]); // Only re-run the effect if debouncedSearch changes
   return (
     <div>
-      <Breadcrumb pageName="Add Products" />
+      <Breadcrumb pageName="Update Product" />
       <Toast ref={toast} position="top-right" />
       <div class="grid grid-cols-10 gap-4">
         <div class="col-span-2  p-4 ">
@@ -750,6 +829,41 @@ const AddProduct = () => {
             {previews.length > 0 && (
               <div className="p-5">
                 <div className="item-center flex justify-start gap-3">
+                  {previews.slice(0, 4).map(({ preview }, index) => {
+                    const image = preview.startsWith("blob:http")
+                      ? `${preview}`
+                      : `${imageBaseURL}${preview}`;
+                    return (
+                      <div
+                        key={index}
+                        onClick={() => handleDelete(index, preview)}
+                        className="group relative flex items-center justify-center hover:bg-gray"
+                      >
+                        <div
+                          style={{ position: "absolute" }}
+                          className="group-hover: hidden  group-hover:block"
+                        >
+                          <i
+                            color={"black"}
+                            className="pi pi-trash cursor-pointer text-[30px] text-red"
+                          />
+                        </div>
+                        <div className="flex h-40 w-40 bg-[#fafafa]">
+                          <img
+                            className="group-hover:opacity-40"
+                            src={image}
+                            alt={`Preview ${index + 1}`}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+            {/* {previews.length > 0 && (
+              <div className="p-5">
+                <div className="item-center flex justify-start gap-3">
                   {previews.map(({ preview }, index) => (
                     <div
                       key={index}
@@ -781,7 +895,7 @@ const AddProduct = () => {
                   ))}
                 </div>
               </div>
-            )}
+            )} */}
             {error && files.length == 0
               ? files.length == 0 && (
                   <label className="text-[0.8em] text-red">
@@ -812,4 +926,4 @@ const AddProduct = () => {
   );
 };
 
-export default AddProduct;
+export default UpdateProduct;
