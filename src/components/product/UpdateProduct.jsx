@@ -71,11 +71,12 @@ const UpdateProduct = () => {
   const toast = useRef(null);
 
   const handleDelete = (id, previews) => {
-    setdeleteImage(previews);
+    setdeleteImage(previews, "dddsss");
+    console.log(previews);
     setPreviews((prevData) => prevData.filter((item, index) => index !== id));
   };
 
-  const id = ["Editor", "Operator"].includes(user?.role)
+  const id = !["Seller", "Admin"].includes(user?.role)
     ? user?.vendor
     : user?._id;
   if (status === "Sale") {
@@ -239,7 +240,7 @@ const UpdateProduct = () => {
 
     try {
       const res = await axios.put(
-        `${BaseURL}/product/update-product/${id}`,
+        `${BaseURL}/product/update-product/${params.id}`,
         productData,
         {
           headers: {
@@ -247,47 +248,19 @@ const UpdateProduct = () => {
           },
         },
       );
-      router.push("/product-list");
+      router.push("/product/product-list");
       if (res.data.success) {
-        setFormData({
-          productName: "",
-          companyProductName: "",
-          productDescription: "",
-          // category: "",
-          // taxClass: "",
-          // subCategory: "",
-          // rateDefinition: "",
-          rentPrice: "",
-          rentDuration: "",
-          salePrice: "",
-          range: "",
-          vat: "",
-          rate: "daily",
-          quantity: 1,
-          lenghtUnit: "",
-          weightUnit: "",
-          weight: "",
-          length: "",
-          width: "",
-          height: "",
-        });
-        setError(false);
-
-        setPreviews([]);
-        setFiles([]);
         toast.current.show({
           severity: "success",
           summary: "Success",
           detail: res.data.message,
           life: 3000,
         });
-        // toast({
-        //   title: res.data.message,
-        //   status: "success",
-        //   position: "top-right",
-        //   duration: 2000,
-        //   isClosable: true,
-        // });
+
+        setError(false);
+
+        setPreviews([]);
+        setFiles([]);
       }
     } catch (error) {
       toast.current.show({
@@ -296,13 +269,7 @@ const UpdateProduct = () => {
         detail: error.response.data.message,
         life: 3000,
       });
-      //   toast({
-      //     title: error.response.data.message,
-      //     status: "error",
-      //     position: "top-right",
-      //     duration: 2000,
-      //     isClosable: true,
-      //   });
+
       console.error("Error adding product", error);
     }
   };
@@ -313,24 +280,20 @@ const UpdateProduct = () => {
 
   useEffect(() => {
     const delteProductImage = async () => {
+      console.log(token);
       try {
-        await axios.delete(
-          `${BaseURL}/product/${id}/image`,
-          {
-            data: { imageUrl: `${deleteImage}` },
+        await axios.delete(`${BaseURL}/product/${params.id}`, {
+          data: { imageUrl: `${deleteImage}` },
+          headers: {
+            authorization: `Bearer ${token}`,
           },
-          {
-            headers: {
-              authorization: `Bearer ${token}`,
-            },
-          },
-        );
+        });
       } catch (error) {
         console.log(error);
       }
     };
     delteProductImage();
-  }, [deleteImage]);
+  }, [deleteImage, token, params]);
   useEffect(() => {
     const fetchData = async () => {
       setpromptLoader(true);
@@ -575,7 +538,7 @@ const UpdateProduct = () => {
                         onChange={(e) => setrateDefinitionValue(e.value)}
                         options={minHireData}
                         optionLabel="name"
-                        // placeholder="Select Rate Definiton"
+                        placeholder="Select Rate Definiton"
                         name="rateDefinitionValue"
                         className="md:w-14rem w-full text-[0.9em]"
                         checkmark={true}

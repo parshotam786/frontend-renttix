@@ -92,7 +92,7 @@ const menuGroups = [
         route: "#",
         children: [
           { label: "Orders", route: "/order/list" },
-          { label: "Movements", route: "/order/movements" },
+          { label: "Create Order", route: "/order/create" },
           { label: "Purchase Orders", route: "/order/purchase" },
         ],
       },
@@ -117,8 +117,8 @@ const menuGroups = [
         label: "Invoicing",
         route: "#",
         children: [
-          { label: "Invoice Batches", route: "/tables" },
-          { label: "Invoice Run", route: "/tables" },
+          { label: "Invoice Batches", route: "/invoicing/invoice-batch" },
+          { label: "Invoice Run", route: "/invoicing/invoice-run" },
         ],
       },
       {

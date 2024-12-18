@@ -217,13 +217,6 @@ const AddProduct = () => {
           detail: res.data.message,
           life: 3000,
         });
-        // toast({
-        //   title: res.data.message,
-        //   status: "success",
-        //   position: "top-right",
-        //   duration: 2000,
-        //   isClosable: true,
-        // });
       }
     } catch (error) {
       toast.current.show({
@@ -232,13 +225,7 @@ const AddProduct = () => {
         detail: error.response.data.message,
         life: 3000,
       });
-      //   toast({
-      //     title: error.response.data.message,
-      //     status: "error",
-      //     position: "top-right",
-      //     duration: 2000,
-      //     isClosable: true,
-      //   });
+
       console.error("Error adding product", error);
     }
   };
@@ -800,7 +787,10 @@ const AddProduct = () => {
         <div class="col-span-5  p-4">
           <div className="flex justify-end gap-7 ">
             <div className="">
-              <Button label="Cancel" onClick={handleSubmit} />
+              <Button
+                onClick={() => router.push("product/product-list")}
+                label="Cancel"
+              />
             </div>
             <div className="">
               <Button label="Save" onClick={handleSubmit} />

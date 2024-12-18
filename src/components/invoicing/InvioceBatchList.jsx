@@ -23,8 +23,9 @@ import { useSelector } from "react-redux";
 import Breadcrumb from "../Breadcrumbs/Breadcrumb";
 import { useRouter } from "next/navigation";
 import { BaseURL } from "../../../utils/baseUrl";
+import Link from "next/link";
 
-export default function OrderList() {
+export default function InvioceBatchList() {
   let emptyProduct = {
     id: null,
     name: "",
@@ -46,6 +47,7 @@ export default function OrderList() {
   const [submitted, setSubmitted] = useState(false);
   const [globalFilter, setGlobalFilter] = useState(null);
   const toast = useRef(null);
+  const [loading, setloading] = useState(false);
   const dt = useRef(null);
   const router = useRouter();
 
@@ -61,7 +63,7 @@ export default function OrderList() {
 
   useEffect(() => {
     axios
-      .get(`${BaseURL}/order/get-all-orders`, {
+      .get(`${BaseURL}/invoice/invoice-batches?search=&&page=1&&limit=10`, {
         headers: {
           authorization: `Bearer ${token}`,
         },
@@ -145,18 +147,36 @@ export default function OrderList() {
     setDeleteProductDialog(true);
   };
 
-  const deleteProduct = () => {
-    let _products = products.filter((val) => val._id !== product._id);
+  const deleteProduct = async () => {
+    setloading(true);
+    try {
+      let res = await axios.delete(`${BaseURL}/invoice/${product._id}`, {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
+      let _products = products.filter((val) => val._id !== product._id);
 
-    setProducts(_products);
-    setDeleteProductDialog(false);
-    setProduct(emptyProduct);
-    toast.current.show({
-      severity: "success",
-      summary: "Successful",
-      detail: "Order Deleted",
-      life: 3000,
-    });
+      setProducts(_products);
+      setDeleteProductDialog(false);
+      setProduct(emptyProduct);
+      setloading(false);
+      toast.current.show({
+        severity: "success",
+        summary: "Successful",
+        detail: res.data.message,
+        life: 3000,
+      });
+    } catch (error) {
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: error.response.data.message,
+        life: 3000,
+      });
+      setloading(false);
+      console.log(error);
+    }
   };
 
   const findIndexById = (id) => {
@@ -288,7 +308,7 @@ export default function OrderList() {
   const actionBodyTemplate = (rowData) => {
     return (
       <React.Fragment>
-        <i className="pi pi-pen-to-square mr-2" />
+        {/* <i className="pi pi-pen-to-square mr-2" /> */}
         <i
           className="pi pi-trash ml-2"
           onClick={() => confirmDeleteProduct(rowData)}
@@ -342,7 +362,8 @@ export default function OrderList() {
       />
       <Button
         label="Yes"
-        icon="pi pi-check"
+        icon={"pi pi-check"}
+        loading={loading}
         severity="danger"
         onClick={deleteProduct}
       />
@@ -367,7 +388,7 @@ export default function OrderList() {
 
   return (
     <div>
-      <Breadcrumb pageName="Proudcts" />
+      <Breadcrumb pageName="Invoice Batch" />
       <Toast ref={toast} />
       <div className="card">
         <Toolbar
@@ -400,16 +421,32 @@ export default function OrderList() {
           <Column
             field="account"
             header="Name"
-            // body={imageBodyTemplate}
+            body={(info) => {
+              return (
+                <span>
+                  <Link
+                    style={{ color: "#337ab7" }}
+                    href={`/invoice/invoice-batches/${info?._id}`}
+                  >
+                    <div className="flex items-center justify-start gap-3">
+                      <i className="pi pi-box text-[20px] text-[#555]" />
+                      <label className=" capitalize">
+                        {info.name} <span>({info.batchNumber})</span>
+                      </label>
+                    </div>
+                  </Link>
+                </span>
+              );
+            }}
           ></Column>
 
           <Column
-            field={"status"}
-            header="Type"
+            field={"description"}
+            header="Description"
             body={(item) => {
               return (
                 <>
-                  <span>Order</span>
+                  <span>{item.description}</span>
                 </>
               );
             }}
@@ -417,53 +454,45 @@ export default function OrderList() {
             style={{ minWidth: "8rem" }}
           ></Column>
           <Column
-            field="status"
-            header="Status"
+            field="batchDate"
+            header="Batch Date"
             sortable
             body={(item) => {
               return (
                 <>
-                  <span>Open</span>
+                  <span>{moment(item.batchDate).format("LLLL")}</span>
                 </>
               );
             }}
             style={{ minWidth: "10rem" }}
           ></Column>
           <Column
-            field="deliveryDate"
-            header="Delivery Date"
+            field="totalInvoice"
+            header="Total Invoices	"
             sortable
             body={(item) => {
               return (
                 <>
-                  <span>{moment(item.deliveryDate).format("LLLL")}</span>
+                  <span>{item.totalInvoice}</span>
                 </>
               );
             }}
             style={{ minWidth: "10rem" }}
           ></Column>
           <Column
-            field="deliveryAddress1"
-            header="Delivery Address"
-            // body={(item) => {
-            //   return (
-            //     <>
-            //       <span>
-            //         {item.minimumRentalPeriod}
-            //         {item.minimumRentalPeriod >= 1 ? "Days" : "-"}
-            //       </span>
-            //     </>
-            //   );
-            // }}
+            field="totalPrice"
+            header="Total (Inc. TAX)	"
+            body={(item) => {
+              return (
+                <>
+                  <span>{Number(item.totalPrice).toFixed(2)}</span>
+                </>
+              );
+            }}
             sortable
             style={{ minWidth: "12rem" }}
           ></Column>
-          <Column
-            field="city"
-            header="Depot"
-            sortable
-            style={{ minWidth: "12rem" }}
-          ></Column>
+
           <Column
             body={actionBodyTemplate}
             header="Action"
@@ -472,126 +501,6 @@ export default function OrderList() {
           ></Column>
         </DataTable>
       </div>
-
-      <Dialog
-        visible={productDialog}
-        style={{ width: "32rem" }}
-        breakpoints={{ "960px": "75vw", "641px": "90vw" }}
-        header="Product Details"
-        modal
-        className="p-fluid"
-        footer={productDialogFooter}
-        onHide={hideDialog}
-      >
-        {/* {product.image && (
-          <img
-            src={`https://primefaces.org/cdn/primereact/images/product/${product.image}`}
-            alt={product.image}
-            className="product-image m-auto block pb-3"
-          />
-        )} */}
-        <div className="field">
-          <label htmlFor="name" className="font-bold">
-            Name
-          </label>
-          <InputText
-            id="name"
-            value={product.name}
-            onChange={(e) => onInputChange(e, "name")}
-            required
-            autoFocus
-            className={classNames({ "p-invalid": submitted && !product.name })}
-          />
-          {submitted && !product.name && (
-            <small className="p-error">Name is required.</small>
-          )}
-        </div>
-        <div className="field">
-          <label htmlFor="description" className="font-bold">
-            Description
-          </label>
-          <InputTextarea
-            id="description"
-            value={product.description}
-            onChange={(e) => onInputChange(e, "description")}
-            required
-            rows={3}
-            cols={20}
-          />
-        </div>
-
-        <div className="field">
-          <label className="mb-3 font-bold">Category</label>
-          <div className="formgrid grid">
-            <div className="field-radiobutton col-6">
-              <RadioButton
-                inputId="category1"
-                name="category"
-                value="Accessories"
-                onChange={onCategoryChange}
-                checked={product.category === "Accessories"}
-              />
-              <label htmlFor="category1">Accessories</label>
-            </div>
-            <div className="field-radiobutton col-6">
-              <RadioButton
-                inputId="category2"
-                name="category"
-                value="Clothing"
-                onChange={onCategoryChange}
-                checked={product.category === "Clothing"}
-              />
-              <label htmlFor="category2">Clothing</label>
-            </div>
-            <div className="field-radiobutton col-6">
-              <RadioButton
-                inputId="category3"
-                name="category"
-                value="Electronics"
-                onChange={onCategoryChange}
-                checked={product.category === "Electronics"}
-              />
-              <label htmlFor="category3">Electronics</label>
-            </div>
-            <div className="field-radiobutton col-6">
-              <RadioButton
-                inputId="category4"
-                name="category"
-                value="Fitness"
-                onChange={onCategoryChange}
-                checked={product.category === "Fitness"}
-              />
-              <label htmlFor="category4">Fitness</label>
-            </div>
-          </div>
-        </div>
-
-        <div className="formgrid grid">
-          <div className="field col">
-            <label htmlFor="price" className="font-bold">
-              Price
-            </label>
-            <InputNumber
-              id="price"
-              value={product.price}
-              onValueChange={(e) => onInputNumberChange(e, "price")}
-              mode="currency"
-              currency="USD"
-              locale="en-US"
-            />
-          </div>
-          <div className="field col">
-            <label htmlFor="quantity" className="font-bold">
-              Quantity
-            </label>
-            <InputNumber
-              id="quantity"
-              value={product.quantity}
-              onValueChange={(e) => onInputNumberChange(e, "quantity")}
-            />
-          </div>
-        </div>
-      </Dialog>
 
       <Dialog
         visible={deleteProductDialog}
