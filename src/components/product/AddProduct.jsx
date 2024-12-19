@@ -283,7 +283,7 @@ const AddProduct = () => {
         <div class="col-span-2  p-4 ">
           <h3 className="font-bold">Name and Description</h3>
         </div>
-        <div class="col-span-8 bg-white p-4 md:col-span-8 lg:col-span-8 xl:col-span-5">
+        <div class="col-span-8 bg-white p-4 dark:bg-[#122031] md:col-span-8 lg:col-span-8 xl:col-span-5">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2">
             <div className="">
               <label className="mt-2.5 block text-[0.9em] font-bold  text-black">
@@ -465,7 +465,7 @@ const AddProduct = () => {
         <div class="col-span-2  p-4 ">
           <h3 className="font-bold">Rate Definition</h3>
         </div>
-        <div class="col-span-5 bg-white p-4">
+        <div class="col-span-5 bg-white p-4 dark:bg-[#122031]">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2">
             {status === "Rental" && (
               <>
@@ -610,7 +610,7 @@ const AddProduct = () => {
         <div class="col-span-2  p-4 ">
           <h3 className="font-bold">Additional Info</h3>
         </div>
-        <div class="col-span-5 bg-white p-4">
+        <div class="col-span-5 bg-white p-4 dark:bg-[#122031]">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
             <div className="flex flex-col">
               <label className="text-[0.9em]">Length Unit</label>

@@ -22,6 +22,7 @@ import { useSelector } from "react-redux";
 import Breadcrumb from "../Breadcrumbs/Breadcrumb";
 import { useRouter } from "next/navigation";
 import { BaseURL } from "../../../utils/baseUrl";
+import { ProgressSpinner } from "primereact/progressspinner";
 
 export default function ProductList() {
   let emptyProduct = {
@@ -44,6 +45,7 @@ export default function ProductList() {
   const [selectedProducts, setSelectedProducts] = useState(null);
   const [submitted, setSubmitted] = useState(false);
   const [globalFilter, setGlobalFilter] = useState(null);
+  const [loading, setloading] = useState(false);
   const toast = useRef(null);
   const dt = useRef(null);
   const router = useRouter();
@@ -59,6 +61,7 @@ export default function ProductList() {
     : user?.vendor;
 
   useEffect(() => {
+    setloading(true);
     axios
       .post(
         `${process.env.NEXT_PUBLIC_API_URL}/product/product-lists`,
@@ -71,11 +74,11 @@ export default function ProductList() {
       )
       .then((response) => {
         setProducts(response.data.data);
-        setLoading(false);
+        setloading(false);
       })
       .catch((error) => {
         // setError(error);
-        // setLoading(false);
+        setloading(false);
       });
   }, []);
 
@@ -84,10 +87,6 @@ export default function ProductList() {
       style: "currency",
       currency: "USD",
     });
-  };
-
-  const openNew = () => {
-    router.push("/product/add-product");
   };
 
   const hideDialog = () => {
@@ -136,11 +135,6 @@ export default function ProductList() {
       setProductDialog(false);
       setProduct(emptyProduct);
     }
-  };
-
-  const editProduct = (product) => {
-    setProduct({ ...product });
-    setProductDialog(true);
   };
 
   const confirmDeleteProduct = (product) => {
@@ -284,7 +278,7 @@ export default function ProductList() {
 
   const priceBodyTemplate = (rowData) => {
     return formatCurrency(
-      rowData.rentPrice ? rowData.rentPrice : rowData.salePrice,
+      rowData.rentPrice ? rowData.rentPrice : Number(rowData.salePrice),
     );
   };
 
@@ -303,10 +297,10 @@ export default function ProductList() {
       <React.Fragment>
         <i
           onClick={() => router.push(`/product/${rowData.id}`)}
-          className="pi pi-pen-to-square mr-2"
+          className="pi pi-pen-to-square mr-2 text-primary"
         />
         <i
-          className="pi pi-trash ml-2"
+          className="pi pi-trash ml-2 text-red"
           onClick={() => confirmDeleteProduct(rowData)}
         />
       </React.Fragment>
@@ -328,12 +322,14 @@ export default function ProductList() {
         return null;
     }
   };
-
   const header = (
     <div className="align-items-center justify-content-between flex flex-wrap gap-2">
-      {/* <h4 className="m-0">Manage Products</h4> */}
       <IconField iconPosition="right">
-        <InputIcon className="pi pi-search" />
+        {globalFilter == null || globalFilter == "" ? (
+          <InputIcon className="pi pi-search" />
+        ) : (
+          <></>
+        )}
         <InputText
           type="search"
           onInput={(e) => setGlobalFilter(e.target.value)}
@@ -387,93 +383,117 @@ export default function ProductList() {
       <Toast ref={toast} />
       <div className="card">
         <Toolbar
-          className="mb-4"
+          className="mb-4 dark:bg-black"
           left={leftToolbarTemplate}
           // right={rightToolbarTemplate}
           right={header}
         ></Toolbar>
-
-        <DataTable
-          ref={dt}
-          value={products}
-          selection={selectedProducts}
-          onSelectionChange={(e) => setSelectedProducts(e.value)}
-          dataKey="id"
-          paginator
-          rows={10}
-          rowsPerPageOptions={[5, 10, 25]}
-          paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-          currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
-          globalFilter={globalFilter}
-        >
-          <Column selectionMode="multiple" exportable={false}></Column>
-          {/* <Column
+        {loading ? (
+          <div className="my-auto flex min-h-[50vh] items-center justify-center">
+            <ProgressSpinner
+              style={{
+                width: "50px",
+                height: "50px",
+              }}
+              strokeWidth="3"
+              aria-label="Loading"
+            />
+          </div>
+        ) : (
+          <DataTable
+            ref={dt}
+            value={products}
+            selection={selectedProducts}
+            onSelectionChange={(e) => setSelectedProducts(e.value)}
+            dataKey="id"
+            paginator
+            rows={10}
+            className="dark:bg-black"
+            rowsPerPageOptions={[5, 10, 25]}
+            paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
+            globalFilter={globalFilter}
+          >
+            <Column selectionMode="multiple" exportable={false}></Column>
+            {/* <Column
             field="id"
             header="Code"
             sortable
             style={{ minWidth: "12rem" }}
           ></Column> */}
-          <Column
-            field="thumbnail"
-            header="Product"
-            body={imageBodyTemplate}
-          ></Column>
-          <Column
-            field="productName"
-            header="Product Name"
-            sortable
-            style={{ minWidth: "16rem" }}
-          ></Column>
 
-          <Column
-            field={"rentPrice" ? "rentPrice" : "salePrice"}
-            header="Price"
-            body={priceBodyTemplate}
-            sortable
-            style={{ minWidth: "8rem" }}
-          ></Column>
-          <Column
-            field="status"
-            header="Category"
-            sortable
-            style={{ minWidth: "10rem" }}
-          ></Column>
-          <Column
-            field="quantity"
-            header="Quantity"
-            sortable
-            style={{ minWidth: "10rem" }}
-          ></Column>
-          <Column
-            field="minimumRentalPeriod"
-            header="Min Rental Period"
-            body={(item) => {
-              return (
-                <>
-                  <span>
-                    {item.minimumRentalPeriod}
-                    {item.minimumRentalPeriod >= 1 ? "Days" : "-"}
-                  </span>
-                </>
-              );
-            }}
-            sortable
-            style={{ minWidth: "12rem" }}
-          ></Column>
-          <Column
-            field="stockStatus"
-            header="Status"
-            body={statusBodyTemplate}
-            sortable
-            style={{ minWidth: "12rem" }}
-          ></Column>
-          <Column
-            body={actionBodyTemplate}
-            header="Action"
-            exportable={false}
-            style={{ minWidth: "12rem" }}
-          ></Column>
-        </DataTable>
+            <Column
+              field="thumbnail"
+              header="Product"
+              body={imageBodyTemplate}
+            ></Column>
+            <Column
+              field="productName"
+              header="Product Name"
+              sortable
+              style={{ minWidth: "16rem" }}
+            ></Column>
+
+            <Column
+              field={"rentPrice" ? "rentPrice" : "salePrice"}
+              header="Price"
+              body={priceBodyTemplate}
+              sortable
+              style={{ minWidth: "8rem" }}
+            ></Column>
+            <Column
+              field="status"
+              header="Category"
+              sortable
+              body={(item) => {
+                return (
+                  <>
+                    <Tag
+                      severity={item.status === "Rental" ? "warning" : "info"}
+                      value={item.status}
+                    ></Tag>
+                  </>
+                );
+              }}
+              style={{ minWidth: "10rem" }}
+            ></Column>
+            <Column
+              field="quantity"
+              header="Quantity"
+              sortable
+              style={{ minWidth: "10rem" }}
+            ></Column>
+            <Column
+              field="minimumRentalPeriod"
+              header="Min Rental Period"
+              body={(item) => {
+                return (
+                  <>
+                    <span>
+                      {item.minimumRentalPeriod}
+                      {item.minimumRentalPeriod >= 1 ? "days" : "-"}
+                    </span>
+                  </>
+                );
+              }}
+              sortable
+              style={{ minWidth: "12rem" }}
+            ></Column>
+            <Column
+              field="stockStatus"
+              header="Status"
+              body={statusBodyTemplate}
+              sortable
+              style={{ minWidth: "12rem" }}
+            ></Column>
+            <Column
+              body={actionBodyTemplate}
+              header="Action"
+              exportable={false}
+              style={{ minWidth: "12rem" }}
+            ></Column>
+          </DataTable>
+        )}
       </div>
 
       <Dialog
@@ -605,7 +625,7 @@ export default function ProductList() {
         footer={deleteProductDialogFooter}
         onHide={hideDeleteProductDialog}
       >
-        <div className="confirmation-content">
+        <div className="confirmation-content flex items-center">
           <i
             className="pi pi-exclamation-triangle mr-3"
             style={{ fontSize: "2rem" }}
@@ -627,7 +647,7 @@ export default function ProductList() {
         footer={deleteProductsDialogFooter}
         onHide={hideDeleteProductsDialog}
       >
-        <div className="confirmation-content">
+        <div className="confirmation-content flex items-center">
           <i
             className="pi pi-exclamation-triangle mr-3"
             style={{ fontSize: "2rem" }}

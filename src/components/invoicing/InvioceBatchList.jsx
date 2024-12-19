@@ -24,6 +24,7 @@ import Breadcrumb from "../Breadcrumbs/Breadcrumb";
 import { useRouter } from "next/navigation";
 import { BaseURL } from "../../../utils/baseUrl";
 import Link from "next/link";
+import CanceButton from "../Buttons/CanceButton";
 
 export default function InvioceBatchList() {
   let emptyProduct = {
@@ -233,24 +234,6 @@ export default function InvioceBatchList() {
     setProduct(_product);
   };
 
-  const onInputChange = (e, name) => {
-    const val = (e.target && e.target.value) || "";
-    let _product = { ...product };
-
-    _product[`${name}`] = val;
-
-    setProduct(_product);
-  };
-
-  const onInputNumberChange = (e, name) => {
-    const val = e.value || 0;
-    let _product = { ...product };
-
-    _product[`${name}`] = val;
-
-    setProduct(_product);
-  };
-
   const leftToolbarTemplate = () => {
     return (
       <div className="flex flex-wrap gap-2">
@@ -277,67 +260,27 @@ export default function InvioceBatchList() {
     );
   };
 
-  const imageBodyTemplate = (rowData) => {
-    return (
-      <img
-        className="border-round h-[50px] w-[50px] rounded-lg shadow-2"
-        src={`${process.env.NEXT_PUBLIC_API_URL_IMAGE}${rowData.thumbnail}`}
-        alt={rowData.thumbnail}
-        // className="border-round shadow-2"
-        style={{ width: "64px" }}
-      />
-    );
-  };
-
-  const priceBodyTemplate = (rowData) => {
-    return formatCurrency(
-      rowData.rentPrice ? rowData.rentPrice : rowData.salePrice,
-    );
-  };
-
-  const ratingBodyTemplate = (rowData) => {
-    return <Rating value={rowData.rating} readOnly cancel={false} />;
-  };
-
-  const statusBodyTemplate = (rowData) => {
-    return (
-      <Tag value={rowData.stockStatus} severity={getSeverity(rowData)}></Tag>
-    );
-  };
-
   const actionBodyTemplate = (rowData) => {
     return (
       <React.Fragment>
         {/* <i className="pi pi-pen-to-square mr-2" /> */}
         <i
-          className="pi pi-trash ml-2"
+          className="pi pi-trash ml-2 text-red"
           onClick={() => confirmDeleteProduct(rowData)}
         />
       </React.Fragment>
     );
   };
 
-  const getSeverity = (product) => {
-    switch (product.stockStatus) {
-      case "INSTOCK":
-        return "success";
-
-      case "LOWSTOCK":
-        return "warning";
-
-      case "OUTOFSTOCK":
-        return "danger";
-
-      default:
-        return null;
-    }
-  };
-
   const header = (
     <div className="align-items-center justify-content-between flex flex-wrap gap-2">
       {/* <h4 className="m-0">Manage Products</h4> */}
       <IconField iconPosition="right">
-        <InputIcon className="pi pi-search" />
+        {globalFilter == null || globalFilter == "" ? (
+          <InputIcon className="pi pi-search" />
+        ) : (
+          <></>
+        )}
         <InputText
           type="search"
           onInput={(e) => setGlobalFilter(e.target.value)}
@@ -346,20 +289,10 @@ export default function InvioceBatchList() {
       </IconField>
     </div>
   );
-  const productDialogFooter = (
-    <React.Fragment>
-      <Button label="Cancel" icon="pi pi-times" outlined onClick={hideDialog} />
-      <Button label="Save" icon="pi pi-check" onClick={saveProduct} />
-    </React.Fragment>
-  );
+
   const deleteProductDialogFooter = (
     <React.Fragment>
-      <Button
-        label="No"
-        icon="pi pi-times"
-        outlined
-        onClick={hideDeleteProductDialog}
-      />
+      <CanceButton onClick={hideDeleteProductDialog} />
       <Button
         label="Yes"
         icon={"pi pi-check"}
@@ -371,12 +304,7 @@ export default function InvioceBatchList() {
   );
   const deleteOrdersDialogFooter = (
     <React.Fragment>
-      <Button
-        label="No"
-        icon="pi pi-times"
-        outlined
-        onClick={hideDeleteOrdersDialog}
-      />
+      <CanceButton onClick={hideDeleteOrdersDialog} />
       <Button
         label="Yes"
         icon="pi pi-check"
@@ -511,7 +439,7 @@ export default function InvioceBatchList() {
         footer={deleteProductDialogFooter}
         onHide={hideDeleteProductDialog}
       >
-        <div className="confirmation-content">
+        <div className="confirmation-content flex items-center">
           <i
             className="pi pi-exclamation-triangle mr-3"
             style={{ fontSize: "2rem" }}
@@ -533,7 +461,7 @@ export default function InvioceBatchList() {
         footer={deleteOrdersDialogFooter}
         onHide={hideDeleteOrdersDialog}
       >
-        <div className="confirmation-content">
+        <div className="confirmation-content flex items-center">
           <i
             className="pi pi-exclamation-triangle mr-3"
             style={{ fontSize: "2rem" }}

@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { classNames } from "primereact/utils";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
-// import { ProductService } from "./service/ProductService";
+// import { orderService } from "./service/orderService";
 import { Toast } from "primereact/toast";
 import { Button } from "primereact/button";
 import { FileUpload } from "primereact/fileupload";
@@ -23,9 +23,10 @@ import { useSelector } from "react-redux";
 import Breadcrumb from "../Breadcrumbs/Breadcrumb";
 import { useRouter } from "next/navigation";
 import { BaseURL } from "../../../utils/baseUrl";
+import { ProgressSpinner } from "primereact/progressspinner";
 
 export default function OrderList() {
-  let emptyProduct = {
+  let emptyorder = {
     id: null,
     name: "",
     image: null,
@@ -37,20 +38,21 @@ export default function OrderList() {
     inventoryStatus: "INSTOCK",
   };
 
-  const [products, setProducts] = useState([]);
-  const [productDialog, setProductDialog] = useState(false);
-  const [deleteProductDialog, setDeleteProductDialog] = useState(false);
+  const [orders, setorders] = useState([]);
+  const [orderDialog, setorderDialog] = useState(false);
+  const [deleteorderDialog, setDeleteorderDialog] = useState(false);
   const [deleteOrdersDialog, setDeleteOrdersDialog] = useState(false);
-  const [product, setProduct] = useState(emptyProduct);
-  const [selectedProducts, setSelectedProducts] = useState(null);
+  const [order, setorder] = useState(emptyorder);
+  const [selectedorders, setSelectedorders] = useState(null);
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setloading] = useState(false);
   const [globalFilter, setGlobalFilter] = useState(null);
   const toast = useRef(null);
   const dt = useRef(null);
   const router = useRouter();
 
   //   useEffect(() => {
-  //     ProductService.getProducts().then((data) => setProducts(data));
+  //     orderService.getorders().then((data) => setorders(data));
   //   }, []);
 
   const { token, user } = useSelector((state) => state?.authReducer);
@@ -60,6 +62,7 @@ export default function OrderList() {
     : user?.vendor;
 
   useEffect(() => {
+    setloading(true);
     axios
       .get(`${BaseURL}/order/get-all-orders`, {
         headers: {
@@ -67,90 +70,79 @@ export default function OrderList() {
         },
       })
       .then((response) => {
-        setProducts(response.data.data);
-        setLoading(false);
+        setorders(response.data.data);
+        setloading(false);
       })
       .catch((error) => {
         // setError(error);
-        // setLoading(false);
+        setloading(false);
       });
   }, [token]);
 
-  const formatCurrency = (value) => {
-    return value?.toLocaleString("en-US", {
-      style: "currency",
-      currency: "USD",
-    });
-  };
-
-  const openNew = () => {
-    router.push("/product/add-product");
-  };
-
   const hideDialog = () => {
     setSubmitted(false);
-    setProductDialog(false);
+    setorderDialog(false);
   };
 
-  const hideDeleteProductDialog = () => {
-    setDeleteProductDialog(false);
+  const hideDeleteorderDialog = () => {
+    setDeleteorderDialog(false);
   };
 
   const hideDeleteOrdersDialog = () => {
     setDeleteOrdersDialog(false);
   };
 
-  const saveProduct = () => {
+  const saveorder = () => {
     setSubmitted(true);
 
-    if (product.name.trim()) {
-      let _products = [...products];
-      let _product = { ...product };
+    if (order.name.trim()) {
+      let _orders = [...orders];
+      let _order = { ...order };
 
-      if (product.id) {
-        const index = findIndexById(product.id);
+      if (order.id) {
+        const index = findIndexById(order.id);
 
-        _products[index] = _product;
+        _orders[index] = _order;
         toast.current.show({
           severity: "success",
           summary: "Successful",
-          detail: "Product Updated",
+          detail: "order Updated",
           life: 3000,
         });
       } else {
-        _product.id = createId();
-        _product.image = "product-placeholder.svg";
-        _products.push(_product);
+        _order.id = createId();
+        _order.image = "order-placeholder.svg";
+        _orders.push(_order);
         toast.current.show({
           severity: "success",
           summary: "Successful",
-          detail: "Product Created",
+          detail: "order Created",
           life: 3000,
         });
       }
 
-      setProducts(_products);
-      setProductDialog(false);
-      setProduct(emptyProduct);
+      setorders(_orders);
+      setorderDialog(false);
+      setorder(emptyorder);
     }
   };
 
-  const editProduct = (product) => {
-    setProduct({ ...product });
-    setProductDialog(true);
+  const editorder = (order) => {
+    setorder({ ...order });
+    setorderDialog(true);
   };
 
-  const confirmDeleteProduct = (product) => {
-    setProduct(product);
-    setDeleteProductDialog(true);
+  const confirmDeleteorder = (order) => {
+    setorder(order);
+    setDeleteorderDialog(true);
   };
 
-  const deleteProduct = () => {
-    let _products = products.filter((val) => val._id !== product._id);
+  const deleteorder = () => {
+    let _orders = orders.filter((val) => val._id !== order._id);
 
-    setProducts(_products);
-    setDeleteProductDialog(false);
-    setProduct(emptyProduct);
+    setorders(_orders);
+    setDeleteorderDialog(false);
+    setorder(emptyorder);
     toast.current.show({
       severity: "success",
       summary: "Successful",
@@ -162,8 +154,8 @@ export default function OrderList() {
   const findIndexById = (id) => {
     let index = -1;
 
-    for (let i = 0; i < products.length; i++) {
-      if (products[i].id === id) {
+    for (let i = 0; i < orders.length; i++) {
+      if (orders[i].id === id) {
         index = i;
         break;
       }
@@ -192,50 +184,50 @@ export default function OrderList() {
     setDeleteOrdersDialog(true);
   };
 
-  const deleteSelectedProducts = () => {
-    let _products = products.filter((val) => !selectedProducts.includes(val));
+  const deleteSelectedorders = () => {
+    let _orders = orders.filter((val) => !selectedorders.includes(val));
 
-    setProducts(_products);
+    setorders(_orders);
     setDeleteOrdersDialog(false);
-    setSelectedProducts(null);
+    setSelectedorders(null);
     toast.current.show({
       severity: "success",
       summary: "Successful",
-      detail: "Products Deleted",
+      detail: "orders Deleted",
       life: 3000,
     });
   };
 
   const onCategoryChange = (e) => {
-    let _product = { ...product };
+    let _order = { ...order };
 
-    _product["category"] = e.value;
-    setProduct(_product);
+    _order["category"] = e.value;
+    setorder(_order);
   };
 
   const onInputChange = (e, name) => {
     const val = (e.target && e.target.value) || "";
-    let _product = { ...product };
+    let _order = { ...order };
 
-    _product[`${name}`] = val;
+    _order[`${name}`] = val;
 
-    setProduct(_product);
+    setorder(_order);
   };
 
   const onInputNumberChange = (e, name) => {
     const val = e.value || 0;
-    let _product = { ...product };
+    let _order = { ...order };
 
-    _product[`${name}`] = val;
+    _order[`${name}`] = val;
 
-    setProduct(_product);
+    setorder(_order);
   };
 
   const leftToolbarTemplate = () => {
     return (
       <div className="flex flex-wrap gap-2">
         {/* <Button
-          label="New Product"
+          label="New order"
           icon="pi pi-plus"
           severity="success"
           onClick={openNew}
@@ -251,54 +243,26 @@ export default function OrderList() {
           icon="pi pi-trash"
           style={{ background: "red" }}
           onClick={confirmDeleteSelected}
-          disabled={!selectedProducts || !selectedProducts.length}
+          disabled={!selectedorders || !selectedorders.length}
         />
       </div>
-    );
-  };
-
-  const imageBodyTemplate = (rowData) => {
-    return (
-      <img
-        className="border-round h-[50px] w-[50px] rounded-lg shadow-2"
-        src={`${process.env.NEXT_PUBLIC_API_URL_IMAGE}${rowData.thumbnail}`}
-        alt={rowData.thumbnail}
-        // className="border-round shadow-2"
-        style={{ width: "64px" }}
-      />
-    );
-  };
-
-  const priceBodyTemplate = (rowData) => {
-    return formatCurrency(
-      rowData.rentPrice ? rowData.rentPrice : rowData.salePrice,
-    );
-  };
-
-  const ratingBodyTemplate = (rowData) => {
-    return <Rating value={rowData.rating} readOnly cancel={false} />;
-  };
-
-  const statusBodyTemplate = (rowData) => {
-    return (
-      <Tag value={rowData.stockStatus} severity={getSeverity(rowData)}></Tag>
     );
   };
 
   const actionBodyTemplate = (rowData) => {
     return (
       <React.Fragment>
-        <i className="pi pi-pen-to-square mr-2" />
+        <i className="pi pi-pen-to-square mr-2 text-primary" />
         <i
-          className="pi pi-trash ml-2"
-          onClick={() => confirmDeleteProduct(rowData)}
+          className="pi pi-trash text-red"
+          onClick={() => confirmDeleteorder(rowData)}
         />
       </React.Fragment>
     );
   };
 
-  const getSeverity = (product) => {
-    switch (product.stockStatus) {
+  const getSeverity = (order) => {
+    switch (order.stockStatus) {
       case "INSTOCK":
         return "success";
 
@@ -315,7 +279,7 @@ export default function OrderList() {
 
   const header = (
     <div className="align-items-center justify-content-between flex flex-wrap gap-2">
-      {/* <h4 className="m-0">Manage Products</h4> */}
+      {/* <h4 className="m-0">Manage orders</h4> */}
       <IconField iconPosition="right">
         <InputIcon className="pi pi-search" />
         <InputText
@@ -326,25 +290,25 @@ export default function OrderList() {
       </IconField>
     </div>
   );
-  const productDialogFooter = (
+  const orderDialogFooter = (
     <React.Fragment>
       <Button label="Cancel" icon="pi pi-times" outlined onClick={hideDialog} />
-      <Button label="Save" icon="pi pi-check" onClick={saveProduct} />
+      <Button label="Save" icon="pi pi-check" onClick={saveorder} />
     </React.Fragment>
   );
-  const deleteProductDialogFooter = (
+  const deleteorderDialogFooter = (
     <React.Fragment>
       <Button
         label="No"
         icon="pi pi-times"
         outlined
-        onClick={hideDeleteProductDialog}
+        onClick={hideDeleteorderDialog}
       />
       <Button
         label="Yes"
         icon="pi pi-check"
         severity="danger"
-        onClick={deleteProduct}
+        onClick={deleteorder}
       />
     </React.Fragment>
   );
@@ -360,14 +324,14 @@ export default function OrderList() {
         label="Yes"
         icon="pi pi-check"
         severity="danger"
-        onClick={deleteSelectedProducts}
+        onClick={deleteSelectedorders}
       />
     </React.Fragment>
   );
 
   return (
     <div>
-      <Breadcrumb pageName="Proudcts" />
+      <Breadcrumb pageName="Orders" />
       <Toast ref={toast} />
       <div className="card">
         <Toolbar
@@ -376,118 +340,134 @@ export default function OrderList() {
           // right={rightToolbarTemplate}
           right={header}
         ></Toolbar>
+        {loading ? (
+          <div className="my-auto flex min-h-[50vh] items-center justify-center">
+            <ProgressSpinner
+              style={{
+                width: "50px",
+                height: "50px",
+              }}
+              strokeWidth="3"
+              aria-label="Loading"
+            />
+          </div>
+        ) : (
+          <DataTable
+            ref={dt}
+            value={orders}
+            selection={selectedorders}
+            onSelectionChange={(e) => setSelectedorders(e.value)}
+            dataKey="_id"
+            paginator
+            rows={10}
+            rowsPerPageOptions={[5, 10, 25]}
+            paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} orders"
+            globalFilter={globalFilter}
+          >
+            <Column selectionMode="multiple" exportable={false}></Column>
+            <Column
+              field="orderId"
+              header="Order No"
+              sortable
+              body={(item) => {
+                return <Tag severity={"success"} value={item.orderId}></Tag>;
+              }}
+              style={{ minWidth: "12rem" }}
+            ></Column>
+            <Column
+              field="account"
+              header="Name"
+              sortable
+              // body={imageBodyTemplate}
+            ></Column>
 
-        <DataTable
-          ref={dt}
-          value={products}
-          selection={selectedProducts}
-          onSelectionChange={(e) => setSelectedProducts(e.value)}
-          dataKey="_id"
-          paginator
-          rows={10}
-          rowsPerPageOptions={[5, 10, 25]}
-          paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-          currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
-          globalFilter={globalFilter}
-        >
-          <Column selectionMode="multiple" exportable={false}></Column>
-          {/* <Column
-            field="id"
-            header="Code"
-            sortable
-            style={{ minWidth: "12rem" }}
-          ></Column> */}
-          <Column
-            field="account"
-            header="Name"
-            // body={imageBodyTemplate}
-          ></Column>
-
-          <Column
-            field={"status"}
-            header="Type"
-            body={(item) => {
-              return (
-                <>
-                  <span>Order</span>
-                </>
-              );
-            }}
-            sortable
-            style={{ minWidth: "8rem" }}
-          ></Column>
-          <Column
-            field="status"
-            header="Status"
-            sortable
-            body={(item) => {
-              return (
-                <>
-                  <span>Open</span>
-                </>
-              );
-            }}
-            style={{ minWidth: "10rem" }}
-          ></Column>
-          <Column
-            field="deliveryDate"
-            header="Delivery Date"
-            sortable
-            body={(item) => {
-              return (
-                <>
-                  <span>{moment(item.deliveryDate).format("LLLL")}</span>
-                </>
-              );
-            }}
-            style={{ minWidth: "10rem" }}
-          ></Column>
-          <Column
-            field="deliveryAddress1"
-            header="Delivery Address"
-            // body={(item) => {
-            //   return (
-            //     <>
-            //       <span>
-            //         {item.minimumRentalPeriod}
-            //         {item.minimumRentalPeriod >= 1 ? "Days" : "-"}
-            //       </span>
-            //     </>
-            //   );
-            // }}
-            sortable
-            style={{ minWidth: "12rem" }}
-          ></Column>
-          <Column
-            field="city"
-            header="Depot"
-            sortable
-            style={{ minWidth: "12rem" }}
-          ></Column>
-          <Column
-            body={actionBodyTemplate}
-            header="Action"
-            exportable={false}
-            style={{ minWidth: "12rem" }}
-          ></Column>
-        </DataTable>
+            <Column
+              field={"order"}
+              header="Type"
+              body={(item) => {
+                return (
+                  <>
+                    <Tag severity={"info"} value={"Order"}></Tag>
+                  </>
+                );
+              }}
+              sortable
+              style={{ minWidth: "8rem" }}
+            ></Column>
+            <Column
+              field="status"
+              header="Status"
+              sortable
+              body={(item) => {
+                return (
+                  <>
+                    <Tag severity={"warning"} value={"Open"}></Tag>
+                  </>
+                );
+              }}
+              style={{ minWidth: "10rem" }}
+            ></Column>
+            <Column
+              field="deliveryDate"
+              header="Delivery Date"
+              sortable
+              body={(item) => {
+                return (
+                  <>
+                    <span>{moment(item.deliveryDate).format("LLLL")}</span>
+                  </>
+                );
+              }}
+              style={{ minWidth: "10rem" }}
+            ></Column>
+            <Column
+              field="deliveryAddress1"
+              header="Delivery Address"
+              // body={(item) => {
+              //   return (
+              //     <>
+              //       <span>
+              //         {item.minimumRentalPeriod}
+              //         {item.minimumRentalPeriod >= 1 ? "Days" : "-"}
+              //       </span>
+              //     </>
+              //   );
+              // }}
+              sortable
+              style={{ minWidth: "12rem" }}
+            ></Column>
+            <Column
+              field="city"
+              header="Depot"
+              sortable
+              style={{ minWidth: "12rem" }}
+            ></Column>
+            <Column
+              body={actionBodyTemplate}
+              header="Action"
+              exportable={false}
+              style={{ minWidth: "12rem" }}
+            ></Column>
+          </DataTable>
+        )}
       </div>
 
       <Dialog
-        visible={productDialog}
+        visible={orderDialog}
         style={{ width: "32rem" }}
         breakpoints={{ "960px": "75vw", "641px": "90vw" }}
-        header="Product Details"
+        header="order Details"
         modal
         className="p-fluid"
-        footer={productDialogFooter}
+        footer={orderDialogFooter}
         onHide={hideDialog}
       >
-        {/* {product.image && (
+        {/* {order.image && (
           <img
-            src={`https://primefaces.org/cdn/primereact/images/product/${product.image}`}
-            alt={product.image}
-            className="product-image m-auto block pb-3"
+            src={`https://primefaces.org/cdn/primereact/images/order/${order.image}`}
+            alt={order.image}
+            className="order-image m-auto block pb-3"
           />
         )} */}
         <div className="field">
@@ -496,13 +476,13 @@ export default function OrderList() {
           </label>
           <InputText
             id="name"
-            value={product.name}
+            value={order.name}
             onChange={(e) => onInputChange(e, "name")}
             required
             autoFocus
-            className={classNames({ "p-invalid": submitted && !product.name })}
+            className={classNames({ "p-invalid": submitted && !order.name })}
           />
-          {submitted && !product.name && (
+          {submitted && !order.name && (
             <small className="p-error">Name is required.</small>
           )}
         </div>
@@ -512,7 +492,7 @@ export default function OrderList() {
           </label>
           <InputTextarea
             id="description"
-            value={product.description}
+            value={order.description}
             onChange={(e) => onInputChange(e, "description")}
             required
             rows={3}
@@ -529,7 +509,7 @@ export default function OrderList() {
                 name="category"
                 value="Accessories"
                 onChange={onCategoryChange}
-                checked={product.category === "Accessories"}
+                checked={order.category === "Accessories"}
               />
               <label htmlFor="category1">Accessories</label>
             </div>
@@ -539,7 +519,7 @@ export default function OrderList() {
                 name="category"
                 value="Clothing"
                 onChange={onCategoryChange}
-                checked={product.category === "Clothing"}
+                checked={order.category === "Clothing"}
               />
               <label htmlFor="category2">Clothing</label>
             </div>
@@ -549,7 +529,7 @@ export default function OrderList() {
                 name="category"
                 value="Electronics"
                 onChange={onCategoryChange}
-                checked={product.category === "Electronics"}
+                checked={order.category === "Electronics"}
               />
               <label htmlFor="category3">Electronics</label>
             </div>
@@ -559,7 +539,7 @@ export default function OrderList() {
                 name="category"
                 value="Fitness"
                 onChange={onCategoryChange}
-                checked={product.category === "Fitness"}
+                checked={order.category === "Fitness"}
               />
               <label htmlFor="category4">Fitness</label>
             </div>
@@ -573,7 +553,7 @@ export default function OrderList() {
             </label>
             <InputNumber
               id="price"
-              value={product.price}
+              value={order.price}
               onValueChange={(e) => onInputNumberChange(e, "price")}
               mode="currency"
               currency="USD"
@@ -586,7 +566,7 @@ export default function OrderList() {
             </label>
             <InputNumber
               id="quantity"
-              value={product.quantity}
+              value={order.quantity}
               onValueChange={(e) => onInputNumberChange(e, "quantity")}
             />
           </div>
@@ -594,22 +574,22 @@ export default function OrderList() {
       </Dialog>
 
       <Dialog
-        visible={deleteProductDialog}
+        visible={deleteorderDialog}
         style={{ width: "32rem" }}
         breakpoints={{ "960px": "75vw", "641px": "90vw" }}
         header="Confirm"
         modal
-        footer={deleteProductDialogFooter}
-        onHide={hideDeleteProductDialog}
+        footer={deleteorderDialogFooter}
+        onHide={hideDeleteorderDialog}
       >
-        <div className="confirmation-content">
+        <div className="confirmation-content flex items-center">
           <i
             className="pi pi-exclamation-triangle mr-3"
             style={{ fontSize: "2rem" }}
           />
-          {product && (
+          {order && (
             <span>
-              Are you sure you want to delete <b>{product.name}</b>?
+              Are you sure you want to delete <b>{order.name}</b>?
             </span>
           )}
         </div>
@@ -624,12 +604,12 @@ export default function OrderList() {
         footer={deleteOrdersDialogFooter}
         onHide={hideDeleteOrdersDialog}
       >
-        <div className="confirmation-content">
+        <div className="confirmation-content flex items-center">
           <i
             className="pi pi-exclamation-triangle mr-3"
             style={{ fontSize: "2rem" }}
           />
-          {product && (
+          {order && (
             <span>Are you sure you want to delete the selected Orders?</span>
           )}
         </div>

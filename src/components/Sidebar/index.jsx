@@ -141,7 +141,10 @@ const menuGroups = [
         ),
         label: "Customer",
         route: "#",
-        children: [{ label: "Account", route: "/pages/settings" }],
+        children: [
+          { label: "Account", route: "/customer/listing" },
+          { label: "Create Customer", route: "/customer/create" },
+        ],
       },
     ],
   },
@@ -171,8 +174,8 @@ const menuGroups = [
           </svg>
         ),
         label: "Profile",
-        route: "#",
-        children: [{ label: "Basic Chart", route: "/charts/basic-chart" }],
+        route: "/profile",
+        // children: [{ label: "Basic ", route: "/profile" }],
       },
       {
         icon: (

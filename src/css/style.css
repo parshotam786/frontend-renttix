@@ -7,12 +7,19 @@
 }
 @layer base {
   body {
-    @apply relative z-1 bg-gray-2 font-satoshi text-base font-normal text-dark-5 dark:bg-[#020D1A] dark:text-dark-6;
+    @apply relative z-1 bg-gray-2 font-satoshi text-base font-normal text-dark-5 dark:bg-[#122031] dark:text-dark-6;
   }
 }
+
 /* globals.css */
 .p-button {
-  @apply rounded-md border-[#F9791D] bg-[#F9791D] px-[1.25rem] py-[0.75rem]  font-medium text-white  shadow-md hover:bg-opacity-90;
+  @apply rounded-md border-[#F9791D] bg-[#F9791D]  font-medium text-white  shadow-md hover:bg-opacity-90;
+}
+.p-datatable .p-sortable-column.p-highlight .p-sortable-column-icon {
+  @apply text-[#f97316];
+}
+.text-black {
+  @apply text-dark-2 dark:text-white;
 }
 .p-highlight {
   @apply text-[#F9791D];
@@ -55,7 +62,7 @@
 }
 .p-inputtext {
   @apply w-full rounded-md
-     border-[1px] border-[#d1d5db] px-[1.25rem] py-[0.75rem] hover:border-[#F9791D];
+     border-[1px] border-[#d1d5db] px-[1.25rem] py-[0.75rem] hover:border-[#F9791D] dark:border-[#6B7280] dark:bg-dark-2;
 }
 
 .p-inputtext:focus {
@@ -87,12 +94,14 @@
 }
 
 .p-inputgroup {
-  @apply w-full rounded-lg border-[1px] border-[#d1d5db]  bg-transparent  font-medium text-dark outline-none focus:border-primary focus-visible:shadow-none dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary;
+  @apply w-full rounded-lg border-[1px] border-[#d1d5db] bg-transparent  font-medium  text-dark outline-none focus:border-primary focus-visible:shadow-none dark:border-dark-3  dark:bg-dark-2 dark:text-white dark:focus:border-primary;
 }
 .p-inputgroup .p-inputtext {
-  @apply border-none;
+  @apply border-none border-[#d1d5db];
 }
-
+.p-inputgroup-addon {
+  @apply border-none dark:border-dark-3 dark:bg-dark-4  dark:text-white;
+}
 .p-dropdown {
   @apply rounded-lg border-[1px] border-[#d1d5db]   bg-transparent   font-medium text-dark shadow-none outline-none focus-within:border-primary focus:border-primary dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary;
 }

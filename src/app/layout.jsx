@@ -16,16 +16,17 @@ export default function RootLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    setTimeout(() => setLoading(false), 1000);
-  }, []);
+  // useEffect(() => {
+  //   setTimeout(() => setLoading(false), 1000);
+  // }, []);
 
   return (
     <html lang="en">
       <body suppressHydrationWarning={true}>
         <ReduxProvider>
           <PrimeReactProvider value={{ unstyled: false, pt: {} }}>
-            {loading ? <Loader /> : children}
+            {/* {loading ? <Loader /> : children} */}
+            {children}
           </PrimeReactProvider>
         </ReduxProvider>
       </body>
