@@ -13,13 +13,16 @@
 
 /* globals.css */
 .p-button {
-  @apply rounded-md border-[#F9791D] bg-[#F9791D]  font-medium text-white  shadow-md hover:bg-opacity-90;
+  @apply rounded-md border-[#F9791D] bg-[#F9791D] px-[1.25rem] py-[0.75rem]  font-medium text-white  shadow-md hover:bg-opacity-90;
 }
 .p-datatable .p-sortable-column.p-highlight .p-sortable-column-icon {
   @apply text-[#f97316];
 }
 .text-black {
   @apply text-dark-2 dark:text-white;
+}
+.hr {
+  @apply border-t-[#d1d5db] dark:border-t-dark-4;
 }
 .p-highlight {
   @apply text-[#F9791D];

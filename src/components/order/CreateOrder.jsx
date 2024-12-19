@@ -329,7 +329,7 @@ const CreateOrder = () => {
         <div class="col-span-2  p-4 ">
           <h3 className="font-bold">Name and Description</h3>
         </div>
-        <div class="col-span-8 bg-white p-4 md:col-span-8 lg:col-span-8 xl:col-span-5">
+        <div class="col-span-8 rounded-lg bg-white p-4 dark:bg-dark md:col-span-8 lg:col-span-8 xl:col-span-5">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2">
             <div className="">
               <label className="mt-2.5 block text-[0.9em] font-bold  text-black">
@@ -416,12 +416,12 @@ const CreateOrder = () => {
           </div>
         </div>
       </div>
-      <hr className="my-6" />
+      <hr className="hr my-6" />
       <div class="mt-4 grid grid-cols-10 gap-8">
         <div class="col-span-2  p-4 ">
           <h3 className="font-bold">Addresses</h3>
         </div>
-        <div class="col-span-8 bg-white p-4 md:col-span-8 lg:col-span-8 xl:col-span-5">
+        <div class="col-span-8 rounded-lg bg-white p-4  dark:bg-dark md:col-span-8 lg:col-span-8 xl:col-span-5">
           <label htmlFor="">Billing Place </label>
           <label className="mt-2.5 block text-[0.9em] font-bold  text-black">
             Address {isRequired()}
@@ -565,12 +565,12 @@ const CreateOrder = () => {
           </div>
         </div>
       </div>
-      <hr className="my-5" />
+      <hr className="hr my-5" />
       <div class="grid grid-cols-10 gap-4">
         <div class="col-span-2  p-4 ">
           <h3 className="font-bold">Details</h3>
         </div>
-        <div class="col-span-8 bg-white p-4 md:col-span-8 lg:col-span-8 xl:col-span-5">
+        <div class="col-span-8 rounded-lg bg-white p-4  dark:bg-dark md:col-span-8 lg:col-span-8 xl:col-span-5">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2">
             <div className="">
               <label className="mt-2.5 block text-[0.9em] font-bold  text-black">
@@ -657,7 +657,7 @@ const CreateOrder = () => {
           </div>
         </div>
       </div>
-      <hr className="my-5" />
+      <hr className="hr my-5" />
       <div class="mt-5 grid grid-cols-10 gap-4">
         <div class="col-span-2  p-4 ">
           {/* <h3 className="font-bold">Upload Product Photos </h3> */}

@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { classNames } from "primereact/utils";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
-// import { ProductService } from "./service/ProductService";
+// import { invoiceService } from "./service/invoiceService";
 import { Toast } from "primereact/toast";
 import { Button } from "primereact/button";
 import { FileUpload } from "primereact/fileupload";
@@ -25,9 +25,11 @@ import { useRouter } from "next/navigation";
 import { BaseURL } from "../../../utils/baseUrl";
 import Link from "next/link";
 import CanceButton from "../Buttons/CanceButton";
+import { ProgressSpinner } from "primereact/progressspinner";
+import Loader from "../common/Loader";
 
 export default function InvioceBatchList() {
-  let emptyProduct = {
+  let emptyinvoice = {
     id: null,
     name: "",
     image: null,
@@ -39,12 +41,12 @@ export default function InvioceBatchList() {
     inventoryStatus: "INSTOCK",
   };
 
-  const [products, setProducts] = useState([]);
-  const [productDialog, setProductDialog] = useState(false);
-  const [deleteProductDialog, setDeleteProductDialog] = useState(false);
+  const [invoices, setinvoices] = useState([]);
+  const [invoiceDialog, setinvoiceDialog] = useState(false);
+  const [deleteinvoiceDialog, setDeleteinvoiceDialog] = useState(false);
   const [deleteOrdersDialog, setDeleteOrdersDialog] = useState(false);
-  const [product, setProduct] = useState(emptyProduct);
-  const [selectedProducts, setSelectedProducts] = useState(null);
+  const [invoice, setinvoice] = useState(emptyinvoice);
+  const [selectedinvoices, setSelectedinvoices] = useState(null);
   const [submitted, setSubmitted] = useState(false);
   const [globalFilter, setGlobalFilter] = useState(null);
   const toast = useRef(null);
@@ -53,7 +55,7 @@ export default function InvioceBatchList() {
   const router = useRouter();
 
   //   useEffect(() => {
-  //     ProductService.getProducts().then((data) => setProducts(data));
+  //     invoiceService.getinvoices().then((data) => setinvoices(data));
   //   }, []);
 
   const { token, user } = useSelector((state) => state?.authReducer);
@@ -63,6 +65,7 @@ export default function InvioceBatchList() {
     : user?.vendor;
 
   useEffect(() => {
+    setloading(true);
     axios
       .get(`${BaseURL}/invoice/invoice-batches?search=&&page=1&&limit=10`, {
         headers: {
@@ -70,12 +73,12 @@ export default function InvioceBatchList() {
         },
       })
       .then((response) => {
-        setProducts(response.data.data);
-        setLoading(false);
+        setinvoices(response.data.data);
+        setloading(false);
       })
       .catch((error) => {
         // setError(error);
-        // setLoading(false);
+        setloading(false);
       });
   }, [token]);
 
@@ -85,82 +88,84 @@ export default function InvioceBatchList() {
       currency: "USD",
     });
   };
-
+  const priceBodyTemplate = (rowData) => {
+    return formatCurrency(Number(rowData.totalPrice));
+  };
   const openNew = () => {
-    router.push("/product/add-product");
+    router.push("/invoice/add-invoice");
   };
 
   const hideDialog = () => {
     setSubmitted(false);
-    setProductDialog(false);
+    setinvoiceDialog(false);
   };
 
-  const hideDeleteProductDialog = () => {
-    setDeleteProductDialog(false);
+  const hideDeleteinvoiceDialog = () => {
+    setDeleteinvoiceDialog(false);
   };
 
   const hideDeleteOrdersDialog = () => {
     setDeleteOrdersDialog(false);
   };
 
-  const saveProduct = () => {
+  const saveinvoice = () => {
     setSubmitted(true);
 
-    if (product.name.trim()) {
-      let _products = [...products];
-      let _product = { ...product };
+    if (invoice.name.trim()) {
+      let _invoices = [...invoices];
+      let _invoice = { ...invoice };
 
-      if (product.id) {
-        const index = findIndexById(product.id);
+      if (invoice.id) {
+        const index = findIndexById(invoice.id);
 
-        _products[index] = _product;
+        _invoices[index] = _invoice;
         toast.current.show({
           severity: "success",
           summary: "Successful",
-          detail: "Product Updated",
+          detail: "invoice Updated",
           life: 3000,
         });
       } else {
-        _product.id = createId();
-        _product.image = "product-placeholder.svg";
-        _products.push(_product);
+        _invoice.id = createId();
+        _invoice.image = "invoice-placeholder.svg";
+        _invoices.push(_invoice);
         toast.current.show({
           severity: "success",
           summary: "Successful",
-          detail: "Product Created",
+          detail: "invoice Created",
           life: 3000,
         });
       }
 
-      setProducts(_products);
-      setProductDialog(false);
-      setProduct(emptyProduct);
+      setinvoices(_invoices);
+      setinvoiceDialog(false);
+      setinvoice(emptyinvoice);
     }
   };
 
-  const editProduct = (product) => {
-    setProduct({ ...product });
-    setProductDialog(true);
+  const editinvoice = (invoice) => {
+    setinvoice({ ...invoice });
+    setinvoiceDialog(true);
   };
 
-  const confirmDeleteProduct = (product) => {
-    setProduct(product);
-    setDeleteProductDialog(true);
+  const confirmDeleteinvoice = (invoice) => {
+    setinvoice(invoice);
+    setDeleteinvoiceDialog(true);
   };
 
-  const deleteProduct = async () => {
+  const deleteinvoice = async () => {
     setloading(true);
     try {
-      let res = await axios.delete(`${BaseURL}/invoice/${product._id}`, {
+      let res = await axios.delete(`${BaseURL}/invoice/${invoice._id}`, {
         headers: {
           authorization: `Bearer ${token}`,
         },
       });
-      let _products = products.filter((val) => val._id !== product._id);
+      let _invoices = invoices.filter((val) => val._id !== invoice._id);
 
-      setProducts(_products);
-      setDeleteProductDialog(false);
-      setProduct(emptyProduct);
+      setinvoices(_invoices);
+      setDeleteinvoiceDialog(false);
+      setinvoice(emptyinvoice);
       setloading(false);
       toast.current.show({
         severity: "success",
@@ -183,8 +188,8 @@ export default function InvioceBatchList() {
   const findIndexById = (id) => {
     let index = -1;
 
-    for (let i = 0; i < products.length; i++) {
-      if (products[i].id === id) {
+    for (let i = 0; i < invoices.length; i++) {
+      if (invoices[i].id === id) {
         index = i;
         break;
       }
@@ -213,32 +218,32 @@ export default function InvioceBatchList() {
     setDeleteOrdersDialog(true);
   };
 
-  const deleteSelectedProducts = () => {
-    let _products = products.filter((val) => !selectedProducts.includes(val));
+  const deleteSelectedinvoices = () => {
+    let _invoices = invoices.filter((val) => !selectedinvoices.includes(val));
 
-    setProducts(_products);
+    setinvoices(_invoices);
     setDeleteOrdersDialog(false);
-    setSelectedProducts(null);
+    setSelectedinvoices(null);
     toast.current.show({
       severity: "success",
       summary: "Successful",
-      detail: "Products Deleted",
+      detail: "invoices Deleted",
       life: 3000,
     });
   };
 
   const onCategoryChange = (e) => {
-    let _product = { ...product };
+    let _invoice = { ...invoice };
 
-    _product["category"] = e.value;
-    setProduct(_product);
+    _invoice["category"] = e.value;
+    setinvoice(_invoice);
   };
 
   const leftToolbarTemplate = () => {
     return (
       <div className="flex flex-wrap gap-2">
         {/* <Button
-          label="New Product"
+          label="New invoice"
           icon="pi pi-plus"
           severity="success"
           onClick={openNew}
@@ -254,7 +259,7 @@ export default function InvioceBatchList() {
           icon="pi pi-trash"
           style={{ background: "red" }}
           onClick={confirmDeleteSelected}
-          disabled={!selectedProducts || !selectedProducts.length}
+          disabled={!selectedinvoices || !selectedinvoices.length}
         />
       </div>
     );
@@ -266,7 +271,7 @@ export default function InvioceBatchList() {
         {/* <i className="pi pi-pen-to-square mr-2" /> */}
         <i
           className="pi pi-trash ml-2 text-red"
-          onClick={() => confirmDeleteProduct(rowData)}
+          onClick={() => confirmDeleteinvoice(rowData)}
         />
       </React.Fragment>
     );
@@ -274,7 +279,7 @@ export default function InvioceBatchList() {
 
   const header = (
     <div className="align-items-center justify-content-between flex flex-wrap gap-2">
-      {/* <h4 className="m-0">Manage Products</h4> */}
+      {/* <h4 className="m-0">Manage invoices</h4> */}
       <IconField iconPosition="right">
         {globalFilter == null || globalFilter == "" ? (
           <InputIcon className="pi pi-search" />
@@ -290,27 +295,31 @@ export default function InvioceBatchList() {
     </div>
   );
 
-  const deleteProductDialogFooter = (
+  const deleteinvoiceDialogFooter = (
     <React.Fragment>
-      <CanceButton onClick={hideDeleteProductDialog} />
-      <Button
-        label="Yes"
-        icon={"pi pi-check"}
-        loading={loading}
-        severity="danger"
-        onClick={deleteProduct}
-      />
+      <div className="flex justify-end gap-2">
+        <CanceButton onClick={hideDeleteinvoiceDialog} />
+        <Button
+          label="Yes"
+          icon={"pi pi-check"}
+          loading={loading}
+          severity="danger"
+          onClick={deleteinvoice}
+        />
+      </div>
     </React.Fragment>
   );
   const deleteOrdersDialogFooter = (
     <React.Fragment>
-      <CanceButton onClick={hideDeleteOrdersDialog} />
-      <Button
-        label="Yes"
-        icon="pi pi-check"
-        severity="danger"
-        onClick={deleteSelectedProducts}
-      />
+      <div className="flex justify-end gap-2">
+        <CanceButton onClick={hideDeleteOrdersDialog} />
+        <Button
+          label="Yes"
+          icon="pi pi-check"
+          severity="danger"
+          onClick={deleteSelectedinvoices}
+        />
+      </div>
     </React.Fragment>
   );
 
@@ -325,128 +334,127 @@ export default function InvioceBatchList() {
           // right={rightToolbarTemplate}
           right={header}
         ></Toolbar>
-
-        <DataTable
-          ref={dt}
-          value={products}
-          selection={selectedProducts}
-          onSelectionChange={(e) => setSelectedProducts(e.value)}
-          dataKey="_id"
-          paginator
-          rows={10}
-          rowsPerPageOptions={[5, 10, 25]}
-          paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-          currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
-          globalFilter={globalFilter}
-        >
-          <Column selectionMode="multiple" exportable={false}></Column>
-          {/* <Column
+        {loading ? (
+          <div className="my-auto flex min-h-[50vh] items-center justify-center">
+            <Loader />
+          </div>
+        ) : (
+          <DataTable
+            ref={dt}
+            value={invoices}
+            selection={selectedinvoices}
+            onSelectionChange={(e) => setSelectedinvoices(e.value)}
+            dataKey="_id"
+            paginator
+            rows={10}
+            rowsPerPageOptions={[5, 10, 25]}
+            paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} invoices"
+            globalFilter={globalFilter}
+          >
+            <Column selectionMode="multiple" exportable={false}></Column>
+            {/* <Column
             field="id"
             header="Code"
             sortable
             style={{ minWidth: "12rem" }}
           ></Column> */}
-          <Column
-            field="account"
-            header="Name"
-            body={(info) => {
-              return (
-                <span>
-                  <Link
-                    style={{ color: "#337ab7" }}
-                    href={`/invoice/invoice-batches/${info?._id}`}
-                  >
-                    <div className="flex items-center justify-start gap-3">
-                      <i className="pi pi-box text-[20px] text-[#555]" />
-                      <label className=" capitalize">
-                        {info.name} <span>({info.batchNumber})</span>
-                      </label>
-                    </div>
-                  </Link>
-                </span>
-              );
-            }}
-          ></Column>
+            <Column
+              field="account"
+              header="Name"
+              body={(info) => {
+                return (
+                  <span>
+                    <Link
+                      style={{ color: "#337ab7" }}
+                      href={`/invoice/invoice-batches/${info?._id}`}
+                    >
+                      <div className="flex items-center justify-start gap-3">
+                        <i className="pi pi-box text-[20px] text-[#555]" />
+                        <label className=" capitalize">
+                          {info.name} <span>({info.batchNumber})</span>
+                        </label>
+                      </div>
+                    </Link>
+                  </span>
+                );
+              }}
+            ></Column>
 
-          <Column
-            field={"description"}
-            header="Description"
-            body={(item) => {
-              return (
-                <>
-                  <span>{item.description}</span>
-                </>
-              );
-            }}
-            sortable
-            style={{ minWidth: "8rem" }}
-          ></Column>
-          <Column
-            field="batchDate"
-            header="Batch Date"
-            sortable
-            body={(item) => {
-              return (
-                <>
-                  <span>{moment(item.batchDate).format("LLLL")}</span>
-                </>
-              );
-            }}
-            style={{ minWidth: "10rem" }}
-          ></Column>
-          <Column
-            field="totalInvoice"
-            header="Total Invoices	"
-            sortable
-            body={(item) => {
-              return (
-                <>
-                  <span>{item.totalInvoice}</span>
-                </>
-              );
-            }}
-            style={{ minWidth: "10rem" }}
-          ></Column>
-          <Column
-            field="totalPrice"
-            header="Total (Inc. TAX)	"
-            body={(item) => {
-              return (
-                <>
-                  <span>{Number(item.totalPrice).toFixed(2)}</span>
-                </>
-              );
-            }}
-            sortable
-            style={{ minWidth: "12rem" }}
-          ></Column>
+            <Column
+              field={"description"}
+              header="Description"
+              body={(item) => {
+                return (
+                  <>
+                    <span>{item.description}</span>
+                  </>
+                );
+              }}
+              sortable
+              style={{ minWidth: "8rem" }}
+            ></Column>
+            <Column
+              field="batchDate"
+              header="Batch Date"
+              sortable
+              body={(item) => {
+                return (
+                  <>
+                    <span>{moment(item.batchDate).format("LLLL")}</span>
+                  </>
+                );
+              }}
+              style={{ minWidth: "10rem" }}
+            ></Column>
+            <Column
+              field="totalInvoice"
+              header="Total Invoices	"
+              sortable
+              body={(item) => {
+                return (
+                  <>
+                    <span>{item.totalInvoice}</span>
+                  </>
+                );
+              }}
+              style={{ minWidth: "10rem" }}
+            ></Column>
+            <Column
+              field="totalPrice"
+              header="Total (Inc. TAX)	"
+              body={priceBodyTemplate}
+              sortable
+              style={{ minWidth: "12rem" }}
+            ></Column>
 
-          <Column
-            body={actionBodyTemplate}
-            header="Action"
-            exportable={false}
-            style={{ minWidth: "12rem" }}
-          ></Column>
-        </DataTable>
+            <Column
+              body={actionBodyTemplate}
+              header="Action"
+              exportable={false}
+              style={{ minWidth: "12rem" }}
+            ></Column>
+          </DataTable>
+        )}
       </div>
 
       <Dialog
-        visible={deleteProductDialog}
+        visible={deleteinvoiceDialog}
         style={{ width: "32rem" }}
         breakpoints={{ "960px": "75vw", "641px": "90vw" }}
         header="Confirm"
         modal
-        footer={deleteProductDialogFooter}
-        onHide={hideDeleteProductDialog}
+        footer={deleteinvoiceDialogFooter}
+        onHide={hideDeleteinvoiceDialog}
       >
         <div className="confirmation-content flex items-center">
           <i
             className="pi pi-exclamation-triangle mr-3"
             style={{ fontSize: "2rem" }}
           />
-          {product && (
+          {invoice && (
             <span>
-              Are you sure you want to delete <b>{product.name}</b>?
+              Are you sure you want to delete <b>{invoice.name}</b>?
             </span>
           )}
         </div>
@@ -466,7 +474,7 @@ export default function InvioceBatchList() {
             className="pi pi-exclamation-triangle mr-3"
             style={{ fontSize: "2rem" }}
           />
-          {product && (
+          {invoice && (
             <span>Are you sure you want to delete the selected Orders?</span>
           )}
         </div>

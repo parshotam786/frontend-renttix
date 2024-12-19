@@ -460,7 +460,7 @@ const AddProduct = () => {
           </div>
         </div>
       </div>
-      <hr className="my-6" />
+      <hr className="hr my-6" />
       <div class="grid grid-cols-10 gap-4">
         <div class="col-span-2  p-4 ">
           <h3 className="font-bold">Rate Definition</h3>
@@ -605,7 +605,7 @@ const AddProduct = () => {
           </div>
         </div>
       </div>
-      <hr className="my-6" />
+      <hr className="hr my-6" />
       <div class="grid grid-cols-10 gap-4">
         <div class="col-span-2  p-4 ">
           <h3 className="font-bold">Additional Info</h3>
@@ -717,19 +717,19 @@ const AddProduct = () => {
           </div>
         </div>
       </div>
-      <hr className="my-6" />
+      <hr className="hr my-6" />
       <div class="grid grid-cols-10 gap-4">
         <div class="col-span-2  p-4 ">
           <h3 className="font-bold">Upload Product Photos </h3>
         </div>
-        <div class="col-span-5 bg-white p-4">
+        <div class="col-span-5 rounded-lg bg-white p-4 dark:bg-dark-2">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-1">
             <div {...getRootProps()} className="dropzone mt-2">
               <input {...getInputProps()} />
               {isDragActive ? (
                 <p>Drop the files here ...</p>
               ) : (
-                <div className="flex h-46 items-center justify-center rounded-xl bg-[#fafafa]">
+                <div className="flex h-46 items-center justify-center rounded-lg rounded-xl bg-[#fafafa] dark:bg-dark-2">
                   <i className="pi pi-upload text-[40px]" />
                 </div>
               )}
@@ -779,7 +779,7 @@ const AddProduct = () => {
           </div>
         </div>
       </div>
-      <hr className="my-6" />
+      <hr className="hr my-6" />
       <div class="mt-5 grid grid-cols-10 gap-4">
         <div class="col-span-2  p-4 ">
           {/* <h3 className="font-bold">Upload Product Photos </h3> */}

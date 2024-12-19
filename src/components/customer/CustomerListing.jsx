@@ -22,6 +22,8 @@ import { BaseURL } from "../../../utils/baseUrl";
 import Link from "next/link";
 import { MultiSelect } from "primereact/multiselect";
 import { ProgressSpinner } from "primereact/progressspinner";
+import Loader from "../common/Loader";
+import CanceButton from "../Buttons/CanceButton";
 
 export default function CustomerListing() {
   let emptycustomer = {
@@ -300,35 +302,30 @@ export default function CustomerListing() {
 
   const deletecustomerDialogFooter = (
     <React.Fragment>
-      <Button
-        label="No"
-        icon="pi pi-times"
-        outlined
-        onClick={hideDeletecustomerDialog}
-      />
-      <Button
-        label="Yes"
-        icon={"pi pi-check"}
-        loading={loading}
-        severity="danger"
-        onClick={deletecustomer}
-      />
+      <div className="flex justify-end gap-2">
+        <CanceButton onClick={hideDeletecustomerDialog} />
+        <Button
+          label="Yes"
+          icon={"pi pi-check"}
+          loading={loading}
+          severity="danger"
+          onClick={deletecustomer}
+        />
+      </div>
     </React.Fragment>
   );
   const deleteOrdersDialogFooter = (
     <React.Fragment>
-      <Button
-        label="No"
-        icon="pi pi-times"
-        outlined
-        onClick={hideDeleteOrdersDialog}
-      />
-      <Button
-        label="Yes"
-        icon="pi pi-check"
-        severity="danger"
-        onClick={deleteSelectedcustomers}
-      />
+      <div className="flex justify-end gap-2">
+        <CanceButton onClick={hideDeleteOrdersDialog} />
+
+        <Button
+          label="Yes"
+          icon="pi pi-check"
+          severity="danger"
+          onClick={deleteSelectedcustomers}
+        />
+      </div>
     </React.Fragment>
   );
 
@@ -345,14 +342,7 @@ export default function CustomerListing() {
         ></Toolbar>
         {loading ? (
           <div className="my-auto flex min-h-[50vh] items-center justify-center">
-            <ProgressSpinner
-              style={{
-                width: "50px",
-                height: "50px",
-              }}
-              strokeWidth="3"
-              aria-label="Loading"
-            />
+            <Loader />
           </div>
         ) : (
           <DataTable

@@ -338,7 +338,7 @@ const UpdateProduct = () => {
         <div class="col-span-2  p-4 ">
           <h3 className="font-bold">Name and Description</h3>
         </div>
-        <div class="col-span-8 bg-white p-4 md:col-span-8 lg:col-span-8 xl:col-span-5">
+        <div class="col-span-8 rounded-lg bg-white p-4 dark:bg-dark-2 md:col-span-8 lg:col-span-8 xl:col-span-5">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2">
             <div className="">
               <label className="mt-2.5 block text-[0.9em] font-bold  text-black">
@@ -515,12 +515,12 @@ const UpdateProduct = () => {
           </div>
         </div>
       </div>
-      <hr className="my-6" />
+      <hr className="hr my-6" />
       <div class="grid grid-cols-10 gap-4">
         <div class="col-span-2  p-4 ">
           <h3 className="font-bold">Rate Definition</h3>
         </div>
-        <div class="col-span-5 bg-white p-4">
+        <div class="col-span-5 rounded-lg  bg-white p-4 dark:bg-dark-2">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2">
             {status === "Rental" && (
               <>
@@ -660,12 +660,12 @@ const UpdateProduct = () => {
           </div>
         </div>
       </div>
-      <hr className="my-6" />
+      <hr className="hr my-6" />
       <div class="grid grid-cols-10 gap-4">
         <div class="col-span-2  p-4 ">
           <h3 className="font-bold">Additional Info</h3>
         </div>
-        <div class="col-span-5 bg-white p-4">
+        <div class="col-span-5 rounded-lg  bg-white p-4 dark:bg-dark-2">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
             <div className="flex flex-col">
               <label className="text-[0.9em]">Length Unit</label>
@@ -772,19 +772,19 @@ const UpdateProduct = () => {
           </div>
         </div>
       </div>
-      <hr className="my-6" />
+      <hr className="hr my-6" />
       <div class="grid grid-cols-10 gap-4">
         <div class="col-span-2  p-4 ">
           <h3 className="font-bold">Upload Product Photos </h3>
         </div>
-        <div class="col-span-5 bg-white p-4">
+        <div class="col-span-5 rounded-lg  bg-white p-4 dark:bg-dark-2">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-1">
             <div {...getRootProps()} className="dropzone mt-2">
               <input {...getInputProps()} />
               {isDragActive ? (
                 <p>Drop the files here ...</p>
               ) : (
-                <div className="flex h-46 items-center justify-center rounded-xl bg-[#fafafa]">
+                <div className="flex h-46 items-center justify-center rounded-xl bg-[#fafafa] dark:bg-dark-2">
                   <i className="pi pi-upload text-[40px]" />
                 </div>
               )}
@@ -811,7 +811,7 @@ const UpdateProduct = () => {
                             className="pi pi-trash cursor-pointer text-[30px] text-red"
                           />
                         </div>
-                        <div className="flex h-40 w-40 bg-[#fafafa]">
+                        <div className="flex h-40 w-40 rounded-lg bg-[#fafafa] dark:bg-dark-4">
                           <img
                             className="group-hover:opacity-40"
                             src={image}
@@ -824,41 +824,7 @@ const UpdateProduct = () => {
                 </div>
               </div>
             )}
-            {/* {previews.length > 0 && (
-              <div className="p-5">
-                <div className="item-center flex justify-start gap-3">
-                  {previews.map(({ preview }, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-center"
-                    >
-                      <div
-                        key={index}
-                        onClick={() => handleDelete(index)}
-                        className="group relative flex items-center justify-center hover:bg-gray"
-                      >
-                        <div
-                          style={{ position: "absolute" }}
-                          className="group-hover: hidden  group-hover:block"
-                        >
-                          <i
-                            color={"black"}
-                            className="pi pi-trash text-[30px]"
-                          />
-                        </div>
-                        <div className="flex h-40 w-40 bg-[#fafafa]">
-                          <img
-                            className="group-hover:opacity-40"
-                            src={preview}
-                            alt={`Preview ${index + 1}`}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )} */}
+
             {error && files.length == 0
               ? files.length == 0 && (
                   <label className="text-[0.8em] text-red">
@@ -869,7 +835,7 @@ const UpdateProduct = () => {
           </div>
         </div>
       </div>
-      <hr className="my-6" />
+      <hr className="hr my-6" />
       <div class="mt-5 grid grid-cols-10 gap-4">
         <div class="col-span-2  p-4 ">
           {/* <h3 className="font-bold">Upload Product Photos </h3> */}

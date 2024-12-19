@@ -24,6 +24,8 @@ import Breadcrumb from "../Breadcrumbs/Breadcrumb";
 import { useRouter } from "next/navigation";
 import { BaseURL } from "../../../utils/baseUrl";
 import { ProgressSpinner } from "primereact/progressspinner";
+import CanceButton from "../Buttons/CanceButton";
+import Loader from "../common/Loader";
 
 export default function OrderList() {
   let emptyorder = {
@@ -292,40 +294,39 @@ export default function OrderList() {
   );
   const orderDialogFooter = (
     <React.Fragment>
-      <Button label="Cancel" icon="pi pi-times" outlined onClick={hideDialog} />
-      <Button label="Save" icon="pi pi-check" onClick={saveorder} />
+      <div className="flex justify-end gap-2">
+        <CanceButton onClick={hideDialog} />
+
+        <Button label="Save" icon="pi pi-check" onClick={saveorder} />
+      </div>
     </React.Fragment>
   );
   const deleteorderDialogFooter = (
     <React.Fragment>
-      <Button
-        label="No"
-        icon="pi pi-times"
-        outlined
-        onClick={hideDeleteorderDialog}
-      />
-      <Button
-        label="Yes"
-        icon="pi pi-check"
-        severity="danger"
-        onClick={deleteorder}
-      />
+      <div className="flex justify-end gap-2">
+        <CanceButton onClick={hideDeleteorderDialog} />
+
+        <Button
+          label="Yes"
+          icon="pi pi-check"
+          severity="danger"
+          onClick={deleteorder}
+        />
+      </div>
     </React.Fragment>
   );
   const deleteOrdersDialogFooter = (
     <React.Fragment>
-      <Button
-        label="No"
-        icon="pi pi-times"
-        outlined
-        onClick={hideDeleteOrdersDialog}
-      />
-      <Button
-        label="Yes"
-        icon="pi pi-check"
-        severity="danger"
-        onClick={deleteSelectedorders}
-      />
+      <div className="flex justify-end gap-2">
+        <CanceButton onClick={hideDeleteOrdersDialog} />
+
+        <Button
+          label="Yes"
+          icon="pi pi-check"
+          severity="danger"
+          onClick={deleteSelectedorders}
+        />
+      </div>
     </React.Fragment>
   );
 
@@ -342,14 +343,7 @@ export default function OrderList() {
         ></Toolbar>
         {loading ? (
           <div className="my-auto flex min-h-[50vh] items-center justify-center">
-            <ProgressSpinner
-              style={{
-                width: "50px",
-                height: "50px",
-              }}
-              strokeWidth="3"
-              aria-label="Loading"
-            />
+            <Loader />
           </div>
         ) : (
           <DataTable

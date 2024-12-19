@@ -23,6 +23,8 @@ import Breadcrumb from "../Breadcrumbs/Breadcrumb";
 import { useRouter } from "next/navigation";
 import { BaseURL } from "../../../utils/baseUrl";
 import { ProgressSpinner } from "primereact/progressspinner";
+import CanceButton from "../Buttons/CanceButton";
+import Loader from "../common/Loader";
 
 export default function ProductList() {
   let emptyProduct = {
@@ -346,34 +348,30 @@ export default function ProductList() {
   );
   const deleteProductDialogFooter = (
     <React.Fragment>
-      <Button
-        label="No"
-        icon="pi pi-times"
-        outlined
-        onClick={hideDeleteProductDialog}
-      />
-      <Button
-        label="Yes"
-        icon="pi pi-check"
-        severity="danger"
-        onClick={deleteProduct}
-      />
+      <div className="flex justify-end gap-2">
+        <CanceButton onClick={hideDeleteProductDialog} />
+
+        <Button
+          label="Yes"
+          icon="pi pi-check"
+          severity="danger"
+          onClick={deleteProduct}
+        />
+      </div>
     </React.Fragment>
   );
   const deleteProductsDialogFooter = (
     <React.Fragment>
-      <Button
-        label="No"
-        icon="pi pi-times"
-        outlined
-        onClick={hideDeleteProductsDialog}
-      />
-      <Button
-        label="Yes"
-        icon="pi pi-check"
-        severity="danger"
-        onClick={deleteSelectedProducts}
-      />
+      <div className="flex justify-end gap-2">
+        <CanceButton onClick={hideDeleteProductsDialog} />
+
+        <Button
+          label="Yes"
+          icon="pi pi-check"
+          severity="danger"
+          onClick={deleteSelectedProducts}
+        />
+      </div>
     </React.Fragment>
   );
 
@@ -390,14 +388,7 @@ export default function ProductList() {
         ></Toolbar>
         {loading ? (
           <div className="my-auto flex min-h-[50vh] items-center justify-center">
-            <ProgressSpinner
-              style={{
-                width: "50px",
-                height: "50px",
-              }}
-              strokeWidth="3"
-              aria-label="Loading"
-            />
+            <Loader />
           </div>
         ) : (
           <DataTable
