@@ -36,7 +36,7 @@ const menuGroups = [
           </svg>
         ),
         label: "Dashboard",
-        route: "#",
+        route: "/",
       },
 
       {
@@ -93,7 +93,6 @@ const menuGroups = [
         children: [
           { label: "Orders", route: "/order/list" },
           { label: "Create Order", route: "/order/create" },
-          { label: "Purchase Orders", route: "/order/purchase" },
         ],
       },
       {

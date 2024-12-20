@@ -1,5 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap");
-@import "primereact/resources/themes/lara-light-blue/theme.css";
+/* @import "primereact/resources/themes/lara-light-blue/theme.css"; */
 
 @layer tailwind-base, primereact, tailwind-utilities;
 @layer tailwind-base {
@@ -7,13 +7,13 @@
 }
 @layer base {
   body {
-    @apply relative z-1 bg-gray-2 font-satoshi text-base font-normal text-dark-5 dark:bg-[#122031] dark:text-dark-6;
+    @apply relative z-1 bg-gray-2 font-satoshi  text-base font-normal text-dark-5 dark:bg-[#122031] dark:text-dark-6;
   }
 }
 
 /* globals.css */
 .p-button {
-  @apply rounded-md border-[#F9791D] bg-[#F9791D] px-[1.25rem] py-[0.75rem]  font-medium text-white  shadow-md hover:bg-opacity-90;
+  @apply rounded-md border-[#F9791D] bg-[#F9791D] px-[1.25rem] py-[0.75rem]  font-medium text-white   shadow-md hover:bg-opacity-90;
 }
 .p-datatable .p-sortable-column.p-highlight .p-sortable-column-icon {
   @apply text-[#f97316];
@@ -65,7 +65,7 @@
 }
 .p-inputtext {
   @apply w-full rounded-md
-     border-[1px] border-[#d1d5db] px-[1.25rem] py-[0.75rem] hover:border-[#F9791D] dark:border-[#6B7280] dark:bg-dark-2;
+     border-[1px] border-[#d1d5db] px-[1.25rem] py-[0.75rem] hover:border-[#F9791D] dark:border-[#6B7280] dark:bg-dark-2 dark:text-white;
 }
 
 .p-inputtext:focus {

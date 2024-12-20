@@ -60,7 +60,7 @@ export default function CustomerListing() {
   useEffect(() => {
     setloading(true);
     axios
-      .get(`${BaseURL}/customer/customer`, {
+      .get(`${BaseURL}/customer/customer?limit=100`, {
         headers: {
           authorization: `Bearer ${token}`,
         },

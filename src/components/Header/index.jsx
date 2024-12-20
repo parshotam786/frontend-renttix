@@ -4,8 +4,52 @@ import DropdownNotification from "./DropdownNotification";
 import DropdownUser from "./DropdownUser";
 import Image from "next/image";
 import SearchForm from "@/components/Header/SearchForm";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { setHeaderTitle } from "@/store/headerTitleSlice";
 
 const Header = ({ sidebarOpen, setSidebarOpen }) => {
+  const dispatch = useDispatch();
+  const path = window.location.pathname;
+  console.log(path);
+
+  const headerTitle = useSelector((state) => state.headerTitle);
+
+  const pathHandle = (item) => {
+    if (item === "/") {
+      return dispatch(setHeaderTitle("Dashboard"));
+    }
+    if (item === "/product/product-list" || item === "/product/add-product") {
+      return dispatch(setHeaderTitle("Products"));
+    }
+    if (item === "/order/list") {
+      return dispatch(setHeaderTitle("Orders"));
+    }
+
+    if (item === "/order/create") {
+      return dispatch(setHeaderTitle("Orders"));
+    }
+    if (item === "/invoicing/invoice-batch") {
+      return dispatch(setHeaderTitle("Invoicing"));
+    }
+    if (item === "/invoicing/invoice-run") {
+      return dispatch(setHeaderTitle("Invoicing"));
+    }
+    if (item === "/customer/create") {
+      return dispatch(setHeaderTitle("Customer"));
+    }
+    if (item === "/customer/listing") {
+      return dispatch(setHeaderTitle("Customer"));
+    }
+    if (item === "/profile") {
+      return dispatch(setHeaderTitle("Profile"));
+    }
+  };
+
+  useEffect(() => {
+    pathHandle(path);
+  }, [pathHandle, path]);
+
   return (
     <header className="sticky top-0 z-999 flex w-full border-b border-stroke bg-white dark:border-stroke-dark dark:bg-gray-dark">
       <div className="flex flex-grow items-center justify-between px-4 py-5 shadow-2 md:px-5 2xl:px-10">
@@ -65,9 +109,9 @@ const Header = ({ sidebarOpen, setSidebarOpen }) => {
 
         <div className="hidden xl:block">
           <div>
-            {/* <h1 className="mb-0.5 text-heading-5 font-bold text-dark dark:text-white">
-              Dashboard
-            </h1> */}
+            <h1 className="mb-0.5 text-heading-5 font-bold text-dark dark:text-white">
+              {headerTitle}
+            </h1>
             {/* <p className="font-medium">Vendor Dashboard</p> */}
           </div>
         </div>
