@@ -367,7 +367,7 @@ export default function InvioceBatchList() {
                   <span>
                     <Link
                       style={{ color: "#337ab7" }}
-                      href={`/invoice/invoice-batches/${info?._id}`}
+                      href={`/invoicing/invoice-batch/${info?._id}`}
                     >
                       <div className="flex items-center justify-start gap-3">
                         <i className="pi pi-box text-[20px] text-[#555]" />
