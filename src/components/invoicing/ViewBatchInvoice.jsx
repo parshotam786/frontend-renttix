@@ -103,134 +103,141 @@ const ViewBatchInvoice = () => {
   //       </Center>
   //     );
   //   }
-  return (
-    <div>
-      <Breadcrumb pageName="Detail Invoice Batch" />
-      {/* <div className="grid grid-cols-3"> */}
-      <div class="mt-5 grid grid-cols-8 gap-4">
-        <div className="col-span-2  p-4">
-          <div className="flex flex-col items-center justify-center ">
-            <FaCodepen className="p-4 text-[250px] text-[#555]" />
 
-            <label
-              htmlFor=""
-              className="text-center text-[20px] font-semibold text-dark-2 dark:text-white"
-            >
-              Invoice : {data?.invocie}
-            </label>
-          </div>
+  return (
+    <>
+      <Breadcrumb pageName="Detail Invoice Batch" />
+      {loading ? (
+        <div className="my-auto flex min-h-[50vh] items-center justify-center">
+          <Loader />
         </div>
-        <div className="col-span-3  p-4 ">
-          <label
-            className="text-[20px] font-semibold text-dark-2 dark:text-white "
-            htmlFor="Action"
-          >
-            Customer Information
-          </label>
-          <div className="flex flex-col ">
-            <div className="flex  justify-between">
-              <label
-                htmlFor=""
-                className="font-semibold text-dark-2 dark:text-white "
-              >
-                Name
-              </label>
-              <div className="text-start">
-                <label className="font-light">{data.customerName}</label>
-              </div>
-            </div>
-            <div className="flex  justify-between">
-              <label
-                htmlFor=""
-                className="font-semibold text-dark-2 dark:text-white "
-              >
-                Address
-              </label>
-              <div className="text-start">
-                <label className="font-light">
-                  {" "}
-                  {` ${data.customerAddress} ${data.customerCity} ${data.customerCountry}`}
+      ) : (
+        <div>
+          {/* <div className="grid grid-cols-3"> */}
+          <div class="mt-5 grid grid-cols-8 gap-4">
+            <div className="col-span-2  p-4">
+              <div className="flex flex-col items-center justify-center ">
+                <FaCodepen className="p-4 text-[250px] text-[#555]" />
+
+                <label
+                  htmlFor=""
+                  className="text-center text-[20px] font-semibold text-dark-2 dark:text-white"
+                >
+                  Invoice : {data?.invocie}
                 </label>
               </div>
             </div>
-            <div className="flex  justify-between">
+            <div className="col-span-3  p-4 ">
               <label
-                htmlFor=""
-                className="font-semibold text-dark-2 dark:text-white "
-              >
-                Email
-              </label>
-              <label className="font-light">{data.customerEmail}</label>
-            </div>
-            <div className="flex justify-between ">
-              <label
-                htmlFor=""
-                className="font-semibold text-dark-2 dark:text-white "
-              >
-                Delivery Address
-              </label>
-              <label className="font-light">
-                {` ${data.deliveryAddress} ${data.deliveryPlaceName}`}
-              </label>
-            </div>
-            <div className="flex justify-between ">
-              <label
-                htmlFor=""
-                className="font-semibold text-dark-2 dark:text-white "
-              >
-                Order Number
-              </label>
-              <label className="font-light"> {data.orderId}</label>
-            </div>
-            <div className="flex justify-between ">
-              <label
-                htmlFor=""
-                className="font-semibold text-dark-2 dark:text-white "
-              >
-                Invoice Date
-              </label>
-              <label className="font-light">
-                {" "}
-                {moment(data.invoiceDate).format("lll")}
-              </label>
-            </div>
-            <div className="flex justify-between ">
-              <label
-                htmlFor=""
-                className="font-semibold text-dark-2 dark:text-white "
-              >
-                Invoice up to Date
-              </label>
-              <label className="font-light">
-                {" "}
-                {moment(data.invoiceUptoDate).format("lll")}
-              </label>
-            </div>
-          </div>
-          <div className="mt-5 flex justify-between gap-4">
-            <div className="">
-              <label
-                className="font-semibold text-dark-2 dark:text-white "
+                className="text-[20px] font-semibold text-dark-2 dark:text-white "
                 htmlFor="Action"
               >
-                Action
+                Customer Information
               </label>
-              <div className="flex flex-col">
-                {data?.status === "Draft" && (
-                  <div className="flex items-center gap-2">
-                    <IoIosCheckmarkCircleOutline />
-
-                    <InvoiceBatchModel
-                      title="Confirm Invoice"
-                      subTitle={"Confirm Invoice"}
-                      fetchOldData={handleRefresh}
-                      invoiceId={params.invoiceId}
-                      batchId={params.id}
-                      description={`Are you sure you want to confirm the Invoice?`}
-                    />
+              <div className="flex flex-col ">
+                <div className="flex  justify-between">
+                  <label
+                    htmlFor=""
+                    className="font-semibold text-dark-2 dark:text-white "
+                  >
+                    Name
+                  </label>
+                  <div className="text-start">
+                    <label className="font-light">{data.customerName}</label>
                   </div>
-                )}
-                {/* {isDraft && (
+                </div>
+                <div className="flex  justify-between">
+                  <label
+                    htmlFor=""
+                    className="font-semibold text-dark-2 dark:text-white "
+                  >
+                    Address
+                  </label>
+                  <div className="text-start">
+                    <label className="font-light">
+                      {" "}
+                      {` ${data.customerAddress} ${data.customerCity} ${data.customerCountry}`}
+                    </label>
+                  </div>
+                </div>
+                <div className="flex  justify-between">
+                  <label
+                    htmlFor=""
+                    className="font-semibold text-dark-2 dark:text-white "
+                  >
+                    Email
+                  </label>
+                  <label className="font-light">{data.customerEmail}</label>
+                </div>
+                <div className="flex justify-between ">
+                  <label
+                    htmlFor=""
+                    className="font-semibold text-dark-2 dark:text-white "
+                  >
+                    Delivery Address
+                  </label>
+                  <label className="font-light">
+                    {` ${data.deliveryAddress} ${data.deliveryPlaceName}`}
+                  </label>
+                </div>
+                <div className="flex justify-between ">
+                  <label
+                    htmlFor=""
+                    className="font-semibold text-dark-2 dark:text-white "
+                  >
+                    Order Number
+                  </label>
+                  <label className="font-light"> {data.orderId}</label>
+                </div>
+                <div className="flex justify-between ">
+                  <label
+                    htmlFor=""
+                    className="font-semibold text-dark-2 dark:text-white "
+                  >
+                    Invoice Date
+                  </label>
+                  <label className="font-light">
+                    {" "}
+                    {moment(data.invoiceDate).format("lll")}
+                  </label>
+                </div>
+                <div className="flex justify-between ">
+                  <label
+                    htmlFor=""
+                    className="font-semibold text-dark-2 dark:text-white "
+                  >
+                    Invoice up to Date
+                  </label>
+                  <label className="font-light">
+                    {" "}
+                    {moment(data.invoiceUptoDate).format("lll")}
+                  </label>
+                </div>
+              </div>
+              <div className="mt-5 flex justify-between gap-4">
+                <div className="">
+                  <label
+                    className="font-semibold text-dark-2 dark:text-white "
+                    htmlFor="Action"
+                  >
+                    Action
+                  </label>
+                  <div className="flex flex-col">
+                    {data?.status === "Draft" && (
+                      <div className="flex items-center gap-2">
+                        <IoIosCheckmarkCircleOutline />
+
+                        <InvoiceBatchModel
+                          title="Confirm Invoice"
+                          subTitle={"Confirm Invoice"}
+                          fetchOldData={handleRefresh}
+                          invoiceId={params.invoiceId}
+                          batchId={params.id}
+                          description={`Are you sure you want to confirm the Invoice?`}
+                        />
+                      </div>
+                    )}
+                    {/* {isDraft && (
                   <>
                     {data?.status === "Draft" && (
                       <div className="flex items-center gap-2">
@@ -248,105 +255,102 @@ const ViewBatchInvoice = () => {
                     )}
                   </>
                 )} */}
-                {(data?.status === "Confirmed" || data?.status === "Draft") && (
-                  <div className="flex items-center gap-2">
-                    <IoIosCheckmarkCircle />
-                    <InvoiceBatchModel
-                      fetchOldData={handleRefresh}
-                      title="Post invoice"
-                      subTitle={"Post invoice"}
-                      batchId={params.id}
-                      invoiceId={params.invoiceId}
-                      data={data}
-                      code={data.invocie}
-                      description={`Are you sure you want to Post the Invoice`}
-                    />
-                  </div>
-                )}
-                <div className="flex items-center gap-2">
-                  <MdDelete />
+                    {(data?.status === "Confirmed" ||
+                      data?.status === "Draft") && (
+                      <div className="flex items-center gap-2">
+                        <IoIosCheckmarkCircle />
+                        <InvoiceBatchModel
+                          fetchOldData={handleRefresh}
+                          title="Post invoice"
+                          subTitle={"Post invoice"}
+                          batchId={params.id}
+                          invoiceId={params.invoiceId}
+                          data={data}
+                          code={data.invocie}
+                          description={`Are you sure you want to Post the Invoice`}
+                        />
+                      </div>
+                    )}
+                    <div className="flex items-center gap-2">
+                      <MdDelete />
 
-                  <InvoiceBatchModel
-                    subTitle={"Confirm Delete"}
-                    code={data?.name}
-                    batchId={data?._id}
-                    description={
-                      "Are you sure you want to delete the invoice batch Invoice Run"
-                    }
-                    title="Delete Invoice Batch"
-                  />
+                      <InvoiceBatchModel
+                        subTitle={"Confirm Delete"}
+                        code={data?.name}
+                        batchId={data?._id}
+                        description={
+                          "Are you sure you want to delete the invoice batch Invoice Run"
+                        }
+                        title="Delete Invoice Batch"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="">
+                  <label
+                    className="font-semibold text-dark-2 dark:text-white "
+                    htmlFor="Action"
+                  >
+                    Document
+                  </label>
+                  <div className="flex">
+                    <div className="flex items-center gap-2">
+                      <PiPrinterFill />
+                      <Link
+                        className="cursor-pointer text-[18px] text-[#3182ce]"
+                        href={`/invoicing/invoice-batch/pdf/${params.id}`}
+                      >
+                        Invoice Batch
+                      </Link>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-            <div className="">
+
+            <div className="col-span-3  p-4">
               <label
-                className="font-semibold text-dark-2 dark:text-white "
+                className="text-[20px] font-semibold text-dark-2 dark:text-white "
                 htmlFor="Action"
               >
-                Document
+                Total Items
               </label>
-              <div className="flex">
-                <div className="flex items-center gap-2">
-                  <PiPrinterFill />
-                  <Link
-                    className="cursor-pointer text-[18px] text-[#3182ce]"
-                    href={`/invoicing/invoice-batch/pdf/${params.id}`}
+              <div className="flex flex-col ">
+                <div className="flex justify-between ">
+                  <label
+                    htmlFor=""
+                    className="font-semibold text-dark-2 dark:text-white "
                   >
-                    Invoice Batch
-                  </Link>
+                    Excluding Tax
+                  </label>
+                  <label className="font-light">${data?.goods}</label>
+                </div>
+                <div className="flex justify-between ">
+                  <label
+                    htmlFor=""
+                    className="font-semibold text-dark-2 dark:text-white "
+                  >
+                    Tax
+                  </label>
+                  <label className="font-light">${data?.tax}</label>
+                </div>
+                <div className="flex justify-between ">
+                  <label
+                    htmlFor=""
+                    className="font-semibold text-dark-2 dark:text-white "
+                  >
+                    Including Tax
+                  </label>
+                  <label className="font-light"> ${data.total}</label>
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <div className="col-span-3  p-4">
-          <label
-            className="text-[20px] font-semibold text-dark-2 dark:text-white "
-            htmlFor="Action"
-          >
-            Total Items
-          </label>
-          <div className="flex flex-col ">
-            <div className="flex justify-between ">
-              <label
-                htmlFor=""
-                className="font-semibold text-dark-2 dark:text-white "
-              >
-                Excluding Tax
-              </label>
-              <label className="font-light">${data?.goods}</label>
-            </div>
-            <div className="flex justify-between ">
-              <label
-                htmlFor=""
-                className="font-semibold text-dark-2 dark:text-white "
-              >
-                Tax
-              </label>
-              <label className="font-light">${data?.tax}</label>
-            </div>
-            <div className="flex justify-between ">
-              <label
-                htmlFor=""
-                className="font-semibold text-dark-2 dark:text-white "
-              >
-                Including Tax
-              </label>
-              <label className="font-light"> ${data.total}</label>
-            </div>
-          </div>
+          <SingleInvoiceTable columnData={data} />
         </div>
-      </div>
-
-      {loading ? (
-        <div className="my-auto flex min-h-[50vh] items-center justify-center">
-          <Loader />
-        </div>
-      ) : (
-        <SingleInvoiceTable columnData={data} />
       )}
-    </div>
+    </>
   );
 };
 
