@@ -4,10 +4,12 @@ import Link from "next/link";
 import Head from "next/head";
 import TopHeader from "@/components/navbar/TopHeader";
 import { Button } from "primereact/button";
+import { useRouter } from "next/navigation";
 
 const Navbar = () => {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isDropdownOpen, setDropdownOpen] = useState(null);
+  const router = useRouter();
 
   const toggleDropdown = (index) => {
     if (isDropdownOpen === index) {
@@ -159,7 +161,8 @@ const Navbar = () => {
 
           <div className="flex justify-end">
             <Button
-              label="Try fro free "
+              label="Try for free "
+              onClick={() => router.push("/login/login")}
               severity="warning"
               style={{ borderRadius: "35px" }}
             />

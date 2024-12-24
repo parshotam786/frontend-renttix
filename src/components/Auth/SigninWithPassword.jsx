@@ -45,7 +45,8 @@ export default function SigninWithPassword() {
       //     output?.role
       //   )
       // ) {
-      window.location.href = "/";
+
+      router.push("/dashboard");
       // }
     } catch (error) {
       setloader(false);

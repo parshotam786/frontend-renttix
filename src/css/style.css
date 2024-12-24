@@ -1,6 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap");
 @import "primereact/resources/themes/lara-light-blue/theme.css";
-@import "flowbite";
+/* @import "flowbite"; */
 
 @layer tailwind-base, primereact, tailwind-utilities;
 @layer tailwind-base {

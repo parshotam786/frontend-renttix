@@ -392,7 +392,7 @@ const config = {
     "three-sides": "polygon(0 0, 100% 0, 100% 100%, 30% 100%, 0 70%)",
   },
 
-  plugins: [require("tailwind-clip-path"), require("flowbite/plugin")],
+  plugins: [require("tailwind-clip-path")],
 };
 
 export default config;
