@@ -219,9 +219,9 @@ const CreateOrder = () => {
     Object.entries(formData).forEach(([key, value]) => {
       orderPayload.append(key, value);
     });
-    orderPayload.append("invoiceRunCode", invoiceRunCodeValue._id);
-    orderPayload.append("paymentTerm", paymentTermsValue._id);
-    orderPayload.append("depot", depotvalue.name);
+    orderPayload.append("invoiceRunCode", invoiceRunCodeValue._id ?? "");
+    orderPayload.append("paymentTerm", paymentTermsValue._id ?? "");
+    orderPayload.append("depot", depotvalue.name ?? "");
     setloading(true);
     event.preventDefault();
 
@@ -237,7 +237,7 @@ const CreateOrder = () => {
         },
       );
       if (response.data.success) {
-        // router.push(`/order/rentalorders/${response.data.data._id}`);
+        router.push(`/order/${response.data.data._id}`);
         setloading(false);
         toast.current.show({
           severity: "success",
@@ -668,7 +668,7 @@ const CreateOrder = () => {
               <GoBackButton title="Cancel" />
             </div>
             <div className="">
-              <Button label="Save" onClick={handleSubmit} />
+              <Button loading={loading} label="Save" onClick={handleSubmit} />
             </div>
           </div>
         </div>

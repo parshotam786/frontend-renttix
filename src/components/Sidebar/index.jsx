@@ -36,7 +36,7 @@ const menuGroups = [
           </svg>
         ),
         label: "Dashboard",
-        route: "/",
+        route: "/dashboard",
       },
 
       {
@@ -213,7 +213,7 @@ const menuGroups = [
           </svg>
         ),
         label: "System Setup",
-        route: "#",
+        route: "/system-setup",
       },
     ],
   },

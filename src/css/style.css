@@ -1,5 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap");
-/* @import "primereact/resources/themes/lara-light-blue/theme.css"; */
+@import "primereact/resources/themes/lara-light-blue/theme.css";
+@import "flowbite";
 
 @layer tailwind-base, primereact, tailwind-utilities;
 @layer tailwind-base {
@@ -15,9 +16,10 @@
 .p-button {
   @apply rounded-md border-[#F9791D] bg-[#F9791D] px-[1.25rem] py-[0.75rem]  font-medium text-white   shadow-md hover:bg-opacity-90;
 }
-.p-datatable .p-sortable-column.p-highlight .p-sortable-column-icon {
-  @apply text-[#f97316];
-}
+/* .p-datatable .p-datatable-tbody > tr > td {
+  @apply border-b border-gray-300 p-4 text-left;
+} */
+
 .text-black {
   @apply text-dark-2 dark:text-white;
 }

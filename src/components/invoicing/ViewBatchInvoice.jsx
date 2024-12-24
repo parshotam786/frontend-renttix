@@ -296,12 +296,13 @@ const ViewBatchInvoice = () => {
                   <div className="flex">
                     <div className="flex items-center gap-2">
                       <PiPrinterFill />
-                      <Link
-                        className="cursor-pointer text-[18px] text-[#3182ce]"
-                        href={`/invoicing/invoice-batch/pdf/${params.id}`}
+                      <button
+                        onClick={handleDownloadInvoice}
+                        className="cursor-pointer text-[#3182ce]"
+                        size={"sm"}
                       >
-                        Invoice Batch
-                      </Link>
+                        Invoice
+                      </button>
                     </div>
                   </div>
                 </div>

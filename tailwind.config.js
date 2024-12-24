@@ -7,6 +7,7 @@ const config = {
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
     "./node_modules/primereact/**/*.{js,ts,jsx,tsx}",
+    "./node_modules/flowbite/**/*.js",
   ],
   safelist: [
     /^p-/, // Safelist all classes starting with `p-` (PrimeReact classes)
@@ -390,7 +391,8 @@ const config = {
   clipPath: {
     "three-sides": "polygon(0 0, 100% 0, 100% 100%, 30% 100%, 0 70%)",
   },
-  plugins: [require("tailwind-clip-path")],
+
+  plugins: [require("tailwind-clip-path"), require("flowbite/plugin")],
 };
 
 export default config;

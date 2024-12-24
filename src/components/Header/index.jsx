@@ -32,8 +32,12 @@ const Header = ({ sidebarOpen, setSidebarOpen }) => {
     if (item === "/invoicing/invoice-batch") {
       return dispatch(setHeaderTitle("Invoicing"));
     }
+
     if (item === "/invoicing/invoice-run") {
       return dispatch(setHeaderTitle("Invoicing"));
+    }
+    if (item === "/system-setup") {
+      return dispatch(setHeaderTitle("System Setup"));
     }
     if (item === "/customer/create") {
       return dispatch(setHeaderTitle("Customer"));

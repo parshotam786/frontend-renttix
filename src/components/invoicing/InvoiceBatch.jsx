@@ -266,7 +266,11 @@ const InvoiceBatch = () => {
               </div>
             </div>
           </div>
-
+          <div className="">
+            <label className="font-semibold">
+              Total Invoice: {data.totalInvoice}
+            </label>
+          </div>
           <InvoiceBatchTable columnData={data} />
         </div>
       )}
