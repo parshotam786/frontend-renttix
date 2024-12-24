@@ -49,7 +49,7 @@ const AddRoleModal = ({ user, refreshFlag }) => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
       console.log(response.data);
       if (response.data.success) {
@@ -108,7 +108,7 @@ const AddRoleModal = ({ user, refreshFlag }) => {
     <>
       {user ? (
         <FiExternalLink
-          className="text-blue-500 cursor-pointer font-semibold"
+          className="cursor-pointer font-semibold text-blue-500"
           onClick={onOpen}
         />
       ) : (
@@ -131,7 +131,7 @@ const AddRoleModal = ({ user, refreshFlag }) => {
             />
           </ModalBody>
           {roles.length > 0 && (
-            <div className="max-h-[300px]  overflow-auto mt-4">
+            <div className="mt-4  max-h-[300px] overflow-auto">
               <TableContainer>
                 <Table variant="simple">
                   <Thead>
@@ -142,13 +142,13 @@ const AddRoleModal = ({ user, refreshFlag }) => {
                   </Thead>
                   <Tbody>
                     {roles?.map((item, index) => (
-                      <Tr>
+                      <Tr key={index}>
                         {/* <Td>{index + 1}</Td> */}
                         <Td>
                           <div className="flex items-center gap-5 capitalize">
                             {" "}
                             <FaUser className="text-[20px] text-[#555555]" />
-                            <Text className="font-semibold text-[14px]">
+                            <Text className="text-[14px] font-semibold">
                               {item.name}
                             </Text>
                           </div>

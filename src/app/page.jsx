@@ -19,15 +19,12 @@ const Navbar = () => {
 
   return (
     <>
-      <Head>
-        <script src="../path/to/flowbite/dist/flowbite.min.js"></script>
-      </Head>
       <nav class="border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
         <div class="mx-auto flex max-w-screen-2xl flex-wrap items-center justify-between p-4">
           <a href="#" class="flex items-center space-x-3 rtl:space-x-reverse">
             <img
-              src="images/logo/logo-dark.svg"
-              class="h-8"
+              src="/images/logo/logo-dark.svg"
+              className="h-8"
               alt="Flowbite Logo"
             />
           </a>

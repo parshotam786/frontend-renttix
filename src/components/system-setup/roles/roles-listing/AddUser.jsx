@@ -65,7 +65,7 @@ const AddUser = () => {
       } else {
         // Remove parent and all its children from permissions
         updatedPermissions = prev.permissions.filter(
-          (perm) => perm !== permission && !children.includes(perm)
+          (perm) => perm !== permission && !children.includes(perm),
         );
       }
 
@@ -101,7 +101,7 @@ const AddUser = () => {
           headers: {
             authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
       setloading(false);
       router.push("/system-setup/roles");
@@ -176,15 +176,15 @@ const AddUser = () => {
   ];
   return (
     <div>
-      <div className="p-5 bg-white rounded-lg w-full md:w-[50%]">
+      <div className="w-full rounded-lg bg-white p-5 md:w-[50%]">
         <div className="my-4">
           <GoPrevious title={"/system-setup/roles"} />
         </div>
         <div className="">
-          <Text className="font-semibold text-[20px]">Add User Account</Text>
-          <hr className="mt-3 mb-8" />
+          <Text className="text-[20px] font-semibold">Add User Account</Text>
+          <hr className="mb-8 mt-3" />
           <div className="flex flex-col gap-3">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
               <div className="flex flex-col gap-1">
                 <Text>Name</Text>
                 <Input
@@ -205,7 +205,7 @@ const AddUser = () => {
                 />
               </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
               <div className="flex flex-col gap-1">
                 <Text>Password</Text>
                 <InputGroup size="md">
@@ -260,9 +260,9 @@ const AddUser = () => {
                 )}
               </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
               <div className="flex flex-col gap-1">
-                <div className="flex gap-1 items-center">
+                <div className="flex items-center gap-1">
                   <Text>Role</Text>{" "}
                   <AddRoleModal refreshFlag={handleRefreshFlag} user={true} />
                 </div>
@@ -272,8 +272,10 @@ const AddUser = () => {
                   value={formData.role}
                   onChange={handleChange}
                 >
-                  {roles?.map((item) => (
-                    <option value={item.name}>{item.name}</option>
+                  {roles?.map((item, index) => (
+                    <option key={index} value={item.name}>
+                      {item.name}
+                    </option>
                   ))}
                 </Select>
               </div>
@@ -289,7 +291,7 @@ const AddUser = () => {
               </div>
             </div>
             <div className="flex flex-col gap-4">
-              <Text className="font-semibold text-[18px] mt-4">
+              <Text className="mt-4 text-[18px] font-semibold">
                 Allow Permission
               </Text>
 
@@ -344,9 +346,9 @@ const AddUser = () => {
                     </div>
                   ))}
               </div> */}
-              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-3 lg:grid-cols-2">
                 {permissionsData.map(({ parent, children }) => (
-                  <div key={parent} className="border p-4 rounded-lg shadow">
+                  <div key={parent} className="rounded-lg border p-4 shadow">
                     <div className="flex items-center justify-between gap-1">
                       <Text className="font-semibold">{parent}</Text>
                       <Switch
@@ -357,7 +359,7 @@ const AddUser = () => {
                           handlePermissionChange(
                             parent,
                             e.target.checked,
-                            children
+                            children,
                           )
                         }
                       />
@@ -384,7 +386,7 @@ const AddUser = () => {
                                 onChange={(e) =>
                                   handlePermissionChange(
                                     child,
-                                    e.target.checked
+                                    e.target.checked,
                                   )
                                 }
                               />
@@ -396,7 +398,7 @@ const AddUser = () => {
                 ))}
               </div>
             </div>
-            <div className="flex justify-end mt-4">
+            <div className="mt-4 flex justify-end">
               <div className="flex gap-3 ">
                 <GoBackButton title={"Cancel"} />
                 <div className="">
