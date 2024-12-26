@@ -8,15 +8,17 @@ export function middleware(request) {
 
   const dashboardPaths = new Set([
     "/profile",
-    "/product-list",
+    "/dashboard",
+    "/product/product-list",
     "/product/add-product",
     "/product/update-product",
-    "/order/rentalorders",
-    "/customers/accounts/add",
-    "/customers/accounts",
+    "/order/list",
+    "/order/create",
+    "/customer/create",
+    "/customer/listing",
     "/system-setup",
-    "/invoice/invoice-batches",
-    "/invoice/invoice-run",
+    "/invoicing/invoice-batch",
+    "/invoicing/invoice-run",
     "/system-setup/roles",
     "/system-setup/roles/add-role",
     "/system-setup/integrations",
@@ -67,7 +69,7 @@ export function middleware(request) {
     (dashboardPaths.has(request.nextUrl.pathname) ||
       adminOnlyPaths.has(request.nextUrl.pathname))
   ) {
-    return NextResponse.redirect(new URL("/login/login", url));
+    return NextResponse.redirect(new URL("/", url));
   }
 }
 

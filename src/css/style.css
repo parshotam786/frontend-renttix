@@ -16,6 +16,9 @@
 .p-button {
   @apply rounded-md border-[#F9791D] bg-[#F9791D] px-[1.25rem] py-[0.75rem]  font-medium text-white   shadow-md hover:bg-opacity-90;
 }
+.p-button.p-button-warning.p-button-outlined {
+  @apply bg-transparent text-dark-2;
+}
 /* .p-datatable .p-datatable-tbody > tr > td {
   @apply border-b border-gray-300 p-4 text-left;
 } */

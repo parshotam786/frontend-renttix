@@ -19,6 +19,7 @@
     "flatpickr": "^4.6.13",
     "flowbite": "^2.5.2",
     "formik": "^2.4.6",
+    "gsap": "^3.12.5",
     "js-cookie": "^3.0.5",
     "jsvectormap": "^1.5.3",
     "lodash": "^4.17.21",
