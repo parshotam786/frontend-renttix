@@ -64,7 +64,7 @@ const menuGroups = [
           </svg>
         ),
         label: "Products",
-
+        route: "/product/product-list",
         children: [
           { label: "All Product", route: "/product/product-list" },
           { label: "Add Product", route: "/product/add-product" },
@@ -89,7 +89,7 @@ const menuGroups = [
           </svg>
         ),
         label: "Orders",
-
+        route: "#",
         children: [
           { label: "Orders", route: "/order/list" },
           { label: "Create Order", route: "/order/create" },
@@ -114,7 +114,7 @@ const menuGroups = [
           </svg>
         ),
         label: "Invoicing",
-
+        route: "#",
         children: [
           { label: "Invoice Batches", route: "/invoicing/invoice-batch" },
           { label: "Invoice Run", route: "/invoicing/invoice-run" },
