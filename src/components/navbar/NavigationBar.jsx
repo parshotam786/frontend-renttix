@@ -8,11 +8,10 @@ import { useSelector } from "react-redux";
 const NavigationBar = () => {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isDropdownOpen, setDropdownOpen] = useState(null);
+  const [selectedLanguage, setSelectedLanguage] = useState("EN");
   const [menuOpen, setMenuOpen] = useState(false);
   const path = usePathname();
   const { token } = useSelector((state) => state?.authReducer);
-
-  console.log(path, "ddd");
 
   const toggleDropdown = (index) => {
     if (isDropdownOpen === index) {
@@ -96,26 +95,38 @@ const NavigationBar = () => {
                 {isDropdownOpen === 0 && (
                   <div className="absolute left-0 top-full z-10 w-48 bg-white shadow-lg">
                     <ul>
-                      <li>
+                      <li
+                        onClick={() => {
+                          setDropdownOpen(null);
+                        }}
+                      >
                         <Link
                           href="/product/feature1"
-                          className="block px-4 py-2 text-dark-2 hover:bg-orange-100 hover:text-orange-600"
+                          className="block border-b-[1px] border-gray-4 px-4 py-2 text-dark-2 hover:bg-orange-100 hover:text-orange-600"
                         >
                           Feature 1
                         </Link>
                       </li>
-                      <li>
+                      <li
+                        onClick={() => {
+                          setDropdownOpen(null);
+                        }}
+                      >
                         <Link
                           href="/product/feature2"
-                          className="block px-4 py-2 text-dark-2 hover:bg-orange-100 hover:text-orange-600"
+                          className="block border-b-[1px] border-gray-4 px-4 py-2 text-dark-2 hover:bg-orange-100 hover:text-orange-600"
                         >
                           Feature 2
                         </Link>
                       </li>
-                      <li>
+                      <li
+                        onClick={() => {
+                          setDropdownOpen(null);
+                        }}
+                      >
                         <Link
                           href="/product/feature3"
-                          className="block px-4 py-2 text-dark-2 hover:bg-orange-100 hover:text-orange-600"
+                          className="block border-b-[1px] border-gray-4 px-4 py-2 text-dark-2 hover:bg-orange-100 hover:text-orange-600"
                         >
                           Feature 3
                         </Link>
@@ -158,7 +169,49 @@ const NavigationBar = () => {
                   )}{" "}
                 </>
               )}
-
+              <div className="relative mx-4">
+                <button
+                  onClick={() => toggleDropdown(1)}
+                  className="block flex items-center py-2 font-semibold text-dark-2 hover:text-orange-600 focus:outline-none"
+                >
+                  {selectedLanguage}
+                  <svg
+                    className={`ml-2 h-4 w-4 transition-transform duration-300 ${
+                      isDropdownOpen === 1 ? "rotate-180" : ""
+                    }`}
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
+                {isDropdownOpen === 1 && (
+                  <div className="absolute right-0 top-full z-10 w-24 bg-white shadow-lg">
+                    <ul>
+                      {["EN", "ES", "FR"].map((lang) => (
+                        <li key={lang}>
+                          <button
+                            onClick={() => {
+                              setSelectedLanguage(lang);
+                              setDropdownOpen(null);
+                            }}
+                            className="block w-full border-b-[1px] border-gray-4 px-4 py-2 text-dark-2 hover:bg-orange-100 hover:text-orange-600"
+                          >
+                            {lang}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
               {token ? (
                 <a
                   href="/dashboard"
