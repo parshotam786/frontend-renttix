@@ -11,7 +11,6 @@ export function middleware(request) {
     "/dashboard",
     "/product/product-list",
     "/product/add-product",
-    "/product/update-product",
     "/order/list",
     "/order/create",
     "/customer/create",
@@ -63,12 +62,20 @@ export function middleware(request) {
     return NextResponse.redirect(new URL("/dashboard", url));
   }
 
-  // Redirect guests to login for protected routes
-  if (
-    !xpdx &&
-    (dashboardPaths.has(request.nextUrl.pathname) ||
-      adminOnlyPaths.has(request.nextUrl.pathname))
-  ) {
+  // Redirect guests to login for protected routes, including dynamic routes
+  const protectedRoutes = [
+    ...dashboardPaths,
+    "/order/",
+    "/product/",
+    "/customer/",
+    "/invoicing/",
+    "/system-setup/",
+  ];
+  const isProtected = protectedRoutes.some((path) =>
+    request.nextUrl.pathname.startsWith(path),
+  );
+
+  if (!xpdx && isProtected) {
     return NextResponse.redirect(new URL("/", url));
   }
 }
@@ -77,5 +84,7 @@ export function middleware(request) {
 export const config = {
   matcher: [
     "/((?!api|_next/static|_next/image|favicon.ico).*)", // Exclude static files and APIs
+    "/order/:path*", // Include dynamic route patterns explicitly
+    "/product/:path*", // Include dynamic route patterns explicitly
   ],
 };

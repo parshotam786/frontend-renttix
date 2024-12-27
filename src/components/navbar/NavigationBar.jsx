@@ -64,12 +64,66 @@ const NavigationBar = () => {
               >
                 How It Works
               </Link>
-              <Link
+              {/* <Link
                 className="block py-2 font-semibold text-dark-2 hover:text-orange-600"
                 href="/services"
               >
                 Product
-              </Link>
+              </Link> */}
+              <div className="relative">
+                <button
+                  onClick={() => toggleDropdown(0)}
+                  className="block flex items-center py-2 font-semibold text-dark-2 hover:text-orange-600 focus:outline-none"
+                >
+                  Product
+                  <svg
+                    className={`ml-2 h-4 w-4 transition-transform duration-300 ${
+                      isDropdownOpen === 0 ? "rotate-180" : ""
+                    }`}
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
+                {isDropdownOpen === 0 && (
+                  <div className="absolute left-0 top-full z-10 w-48 bg-white shadow-lg">
+                    <ul>
+                      <li>
+                        <Link
+                          href="/product/feature1"
+                          className="block px-4 py-2 text-dark-2 hover:bg-orange-100 hover:text-orange-600"
+                        >
+                          Feature 1
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          href="/product/feature2"
+                          className="block px-4 py-2 text-dark-2 hover:bg-orange-100 hover:text-orange-600"
+                        >
+                          Feature 2
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          href="/product/feature3"
+                          className="block px-4 py-2 text-dark-2 hover:bg-orange-100 hover:text-orange-600"
+                        >
+                          Feature 3
+                        </Link>
+                      </li>
+                    </ul>
+                  </div>
+                )}
+              </div>
               <Link
                 className="block py-2 font-semibold text-dark-2 hover:text-orange-600"
                 href="/services"
@@ -157,38 +211,116 @@ const NavigationBar = () => {
         >
           <div className="px-4 py-2">
             <Link
-              className="block py-2 text-dark-2 hover:text-orange-600"
+              className="block px-4 py-2 text-dark-2 hover:bg-orange-100  hover:text-orange-600"
               href="/services"
             >
               How It Works
             </Link>
-            <Link
+            {/* <Link
               className="block py-2 text-dark-2 hover:text-orange-600"
               href="/services"
             >
               Product
-            </Link>
+            </Link> */}
+            <div className="">
+              <button
+                onClick={() => toggleDropdown(0)}
+                className="block flex w-full items-center px-4 py-2 text-dark-2 hover:bg-orange-100  hover:text-orange-600 focus:outline-none"
+              >
+                Product
+                <svg
+                  className={`ml-2 h-4 w-4 transition-transform duration-300 ${
+                    isDropdownOpen === 0 ? "rotate-180" : ""
+                  }`}
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </button>
+              {isDropdownOpen === 0 && (
+                <div className="w-full  shadow-xl">
+                  <ul>
+                    <li>
+                      <Link
+                        href="/product/feature1"
+                        className="block px-4 py-2 text-dark-2 hover:bg-orange-100 hover:text-orange-600"
+                      >
+                        Feature 1
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        href="/product/feature2"
+                        className="block px-4 py-2 text-dark-2 hover:bg-orange-100 hover:text-orange-600"
+                      >
+                        Feature 2
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        href="/product/feature3"
+                        className="block px-4 py-2 text-dark-2 hover:bg-orange-100 hover:text-orange-600"
+                      >
+                        Feature 3
+                      </Link>
+                    </li>
+                  </ul>
+                </div>
+              )}
+            </div>
             <Link
-              className="block py-2 text-dark-2 hover:text-orange-600"
+              className="block px-4 py-2 text-dark-2  hover:bg-orange-100  hover:text-orange-600"
               href="/services"
             >
               Pricing
             </Link>
             <Link
-              className="block py-2 text-dark-2 hover:text-orange-600"
+              className="block px-4 py-2 text-dark-2  hover:bg-orange-100  hover:text-orange-600"
               href="/services"
             >
               Resources
             </Link>
             <Link
-              className="block py-2 text-dark-2 hover:text-orange-600"
+              className="block px-4 py-2 text-dark-2  hover:bg-orange-100  hover:text-orange-600"
               href="/services"
             >
               FAQ
             </Link>
-            <Link className="block py-2 text-orange-600" href="/login">
-              Login
-            </Link>
+            {path != "/login/login" && (
+              <>
+                {!token && (
+                  <Link
+                    className="block px-4 py-2 text-dark-2  hover:bg-orange-100  hover:text-orange-600 "
+                    href="/login/login"
+                  >
+                    Log In
+                  </Link>
+                )}{" "}
+              </>
+            )}
+            {token ? (
+              <a
+                href="/dashboard"
+                className=" px-4 py-3 font-bold text-orange-600 shadow-md "
+              >
+                Dashboard
+              </a>
+            ) : (
+              <a
+                href="/signup"
+                className="block px-4 py-2 text-dark-2  hover:bg-orange-100  hover:text-orange-600 "
+              >
+                Start Free Trial
+              </a>
+            )}
           </div>
         </div>
       </nav>
