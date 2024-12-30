@@ -10,20 +10,23 @@ import Link from "next/link";
 import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
 import { Badge } from "primereact/badge";
-import { BaseURL } from "../../../../../utils/baseUrl";
 import { Tag } from "primereact/tag";
 import useDebounce from "@/hooks/useDebounce";
-import { InputSwitch } from "primereact/inputswitch";
 import { Toast } from "primereact/toast";
-import axios from "axios";
-import { FaEdit } from "react-icons/fa";
-import AddRoleModal from "../role-permission/add-role-modal/AddRoleModal";
+import { FaHandshake } from "react-icons/fa";
+// import AddRoleModal from "../role-permission/add-role-modal/AddRoleModal";
 import Loader from "@/components/common/Loader";
+import { BaseURL } from "../../../../utils/baseUrl";
+import { Dialog } from "primereact/dialog";
+import { MdDeleteForever } from "react-icons/md";
+import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
+import CanceButton from "@/components/Buttons/CanceButton";
 
-export default function PaginatorTemplateDemo() {
-  const [customers, setCustomers] = useState([]);
+export default function InvoiceRunCode() {
+  const [invoiceCode, setInvoiceRunCode] = useState([]);
   const [loading, setLoading] = useState(false);
   const [totalRecords, setTotalRecords] = useState(0);
+  const [visible, setVisible] = useState(false);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [rows, setRows] = useState(5);
@@ -32,48 +35,12 @@ export default function PaginatorTemplateDemo() {
   const toast = useRef();
   const { token } = useSelector((state) => state?.authReducer);
 
-  const handleSwitchChange = async (id, checked) => {
-    console.log(id, checked);
-    try {
-      setCustomers((prevData) =>
-        prevData.map((item) =>
-          item._id === id ? { ...item, accountStatus: checked } : item,
-        ),
-      );
-
-      const response = await axios.put(
-        `${BaseURL}/sub-vendor/sub-user-status`,
-        { id: id, accountStatus: checked },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
-
-      if (response.data.success) {
-        toast.current.show({
-          severity: checked ? "success" : "error",
-          summary: "Status Changed",
-          detail: `Account ${checked ? "Activated" : "Disabled"} successfully!`,
-          life: 3000,
-        });
-      }
-    } catch (error) {
-      // toast.current.show({
-      //   severity: "error",
-      //   summary: "Error",
-      //   detail: error.response.data.message,
-      //   life: 3000,
-      // });
-    }
-  };
-
   const fetchData = async () => {
     setLoading(true);
     try {
       const response = await fetch(
-        `${BaseURL}/sub-vendor/all-sub-user?search=${debouncedSearch}&page=${page}&limit=${rows}`,
+        `${BaseURL}/invoice-run-code?search=${debouncedSearch}&&page=${page}&&limit=${rows}`,
+        // `${BaseURL}/sub-vendor/all-sub-user?search=${debouncedSearch}&page=${page}&limit=${rows}`,
         {
           headers: {
             authorization: `Bearer ${token}`,
@@ -82,7 +49,7 @@ export default function PaginatorTemplateDemo() {
       );
       const result = await response.json();
       if (result.success) {
-        setCustomers(result.data);
+        setInvoiceRunCode(result.data);
         setTotalRecords(result.pagination.total);
       }
     } catch (error) {
@@ -95,6 +62,51 @@ export default function PaginatorTemplateDemo() {
   useEffect(() => {
     fetchData();
   }, [page, rows, debouncedSearch]);
+
+  const deleteCustomer = async (id) => {
+    try {
+      const response = await fetch(`${BaseURL}/invoice-run-code/${id}`, {
+        method: "DELETE",
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        // Remove the deleted customer locally
+        setInvoiceRunCode((previnvoiceCode) =>
+          previnvoiceCode.filter((customer) => customer._id !== id),
+        );
+        setTotalRecords((prevTotal) => prevTotal - 1);
+        toast.current.show({
+          severity: "success",
+          summary: "Success",
+          detail: "Customer deleted successfully!",
+          life: 3000,
+        });
+      } else {
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: result.message || "Failed to delete customer!",
+          life: 3000,
+        });
+      }
+    } catch (error) {
+      console.error("Error deleting customer:", error);
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "An error occurred while deleting the customer.",
+        life: 3000,
+      });
+    } finally {
+      setLoading(false);
+      setVisible(false); // Close the confirmation dialog
+    }
+  };
 
   const onSearch = (e) => {
     setSearch(e.target.value);
@@ -109,11 +121,33 @@ export default function PaginatorTemplateDemo() {
   return (
     <div className="card">
       <Toast ref={toast} />
+      <div className="card justify-content-center flex">
+        <Dialog
+          header="Confirmation"
+          visible={visible}
+          onHide={() => setVisible(false)}
+          footer={
+            <div className="flex justify-end gap-2">
+              <div className="">
+                <CanceButton onClick={() => setVisible(false)} />
+              </div>
+              <Button
+                label="Yes"
+                icon="pi pi-check"
+                onClick={() => deleteCustomer(visible)} // Pass the customer ID to delete
+                autoFocus
+              />
+            </div>
+          }
+        >
+          <p>Are you sure you want to delete this code?</p>
+        </Dialog>
+      </div>
       <div className=" mb-5 flex justify-between border-b-2 pb-4">
         <div className="flex items-center justify-start gap-2">
-          <label className="text-[20px] font-semibold">Accounts</label>
+          <label className="text-[20px] font-semibold">Invoice Run Codes</label>
           <Badge
-            value={customers?.length}
+            value={invoiceCode?.length}
             size="small"
             severity="warning"
           ></Badge>
@@ -133,15 +167,13 @@ export default function PaginatorTemplateDemo() {
               />
             </IconField>
           </div>
-
           <div className="">
-            <Link href={"/system-setup/roles/create"}>
+            <Link href={"/system-setup/invoice-run-code/create"}>
               <Button className="" colorScheme={"orange"}>
-                Add Account
+                Add Invoice Run Code
               </Button>
             </Link>
           </div>
-          <AddRoleModal />
         </div>
       </div>
 
@@ -154,7 +186,7 @@ export default function PaginatorTemplateDemo() {
       ) : (
         <>
           <DataTable
-            value={customers}
+            value={invoiceCode}
             paginator={false}
             // loading={loading}
             rows={rows}
@@ -162,38 +194,39 @@ export default function PaginatorTemplateDemo() {
           >
             <Column
               sortable
-              field="legalName"
+              field="name"
+              body={(info) => {
+                return (
+                  <span>
+                    <Link
+                      style={{ color: "#337ab7" }}
+                      href={`/system-setup/invoice-run-code/update/${info?._id}`}
+                    >
+                      <div className="flex items-center justify-start gap-3">
+                        <FaHandshake className="text-[40px] text-[#555]" />
+                        <label className=" capitalize">{info.name}</label>
+                      </div>
+                    </Link>
+                  </span>
+                );
+              }}
               header="Name"
               style={{ width: "25%" }}
             ></Column>
+
             <Column
-              field="email"
-              header="Email"
-              style={{ width: "25%" }}
-            ></Column>
-            <Column
-              field="role"
-              header="Role"
+              field="code"
+              header="Code"
               style={{ width: "25%" }}
               body={(item) => (
                 <>
-                  <Tag severity={"success"} value={item.role} />
+                  <Tag severity={"success"} value={item.code} />
                 </>
               )}
             ></Column>
             <Column
-              field="accountStatus"
-              header="Type"
-              body={(info) => {
-                return (
-                  <div className="">
-                    <InputSwitch
-                      checked={info.accountStatus}
-                      onChange={(e) => handleSwitchChange(info._id, e.value)}
-                    />
-                  </div>
-                );
-              }}
+              field="description"
+              header="Description"
               style={{ width: "25%" }}
             ></Column>
             <Column
@@ -203,14 +236,12 @@ export default function PaginatorTemplateDemo() {
               body={(info) => {
                 return (
                   <div className="flex gap-4">
-                    <Link
-                      style={{ color: "#337ab7" }}
-                      href={`/system-setup/roles/update/${info?._id}`}
-                    >
-                      <div className="">
-                        <FaEdit className="text-orangecolor cursor-pointer" />
-                      </div>
-                    </Link>
+                    <div className="">
+                      <MdDeleteForever
+                        className="cursor-pointer text-red-500"
+                        onClick={() => setVisible(info._id)} // Pass customer ID to dialog
+                      />
+                    </div>
                   </div>
                 );
               }}

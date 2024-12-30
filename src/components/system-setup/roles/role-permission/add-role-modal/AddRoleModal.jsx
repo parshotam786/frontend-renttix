@@ -1,46 +1,30 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  useDisclosure,
+  Dialog,
   Button,
-  Input,
-  useToast,
-  Text,
-} from "@chakra-ui/react";
-import {
-  Table,
-  Thead,
-  Tbody,
-  Tfoot,
-  Tr,
-  Th,
-  Td,
-  TableCaption,
-  TableContainer,
-} from "@chakra-ui/react";
+  InputText,
+  Toast,
+  DataTable,
+  Column,
+} from "primereact";
 import axios from "axios";
-import { BaseURL } from "../../../../../utils/BaseUrl";
 import { useSelector } from "react-redux";
 import { FaUser } from "react-icons/fa";
 import { FiExternalLink } from "react-icons/fi";
+import { BaseURL } from "../../../../../../utils/baseUrl";
+import CanceButton from "@/components/Buttons/CanceButton";
+
 const AddRoleModal = ({ user, refreshFlag }) => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [loading, setloading] = useState(false);
-  const [name, setname] = useState("");
-  const [error, seterror] = useState("");
-  const [roles, setroles] = useState([]);
+  const [visible, setVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [name, setName] = useState("");
+  const [roles, setRoles] = useState([]);
   const { token } = useSelector((state) => state?.authReducer);
-  const toast = useToast();
+  const toastRef = React.useRef(null);
 
   const addRole = async () => {
-    setloading(true);
+    setLoading(true);
     try {
       const response = await axios.post(
         `${BaseURL}/roles/role`,
@@ -51,36 +35,29 @@ const AddRoleModal = ({ user, refreshFlag }) => {
           },
         },
       );
-      console.log(response.data);
+
       if (response.data.success) {
-        setloading(false);
-        // refreshFlag(true);
+        setLoading(false);
         if (user) {
           refreshFlag((prevFlag) => !prevFlag);
         }
 
-        setname("");
-        setTimeout(() => {
-          onClose();
-        }, 2000);
-
-        toast({
-          title: `${response.data.message}`,
-          status: "success",
-          position: " top-right",
-          duration: 2000,
-          isClosable: true,
+        setName("");
+        toastRef.current.show({
+          severity: "success",
+          summary: "Success",
+          detail: response.data.message,
+          life: 3000,
         });
+        setTimeout(() => setVisible(false), 2000);
       }
     } catch (error) {
-      console.log(error?.response?.data, "show");
-      setloading(false);
-      toast({
-        title: error?.response?.data?.message,
-        status: "error",
-        position: " top-right",
-        duration: 2000,
-        isClosable: true,
+      setLoading(false);
+      toastRef.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: error?.response?.data?.message,
+        life: 3000,
       });
     }
   };
@@ -93,89 +70,85 @@ const AddRoleModal = ({ user, refreshFlag }) => {
             authorization: `Bearer ${token}`,
           },
         });
-        setroles(response.data.data);
+        setRoles(response.data.data);
       } catch (err) {
-        seterror(err.message);
+        toastRef.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: err.message,
+          life: 3000,
+        });
       } finally {
-        setloading(false);
+        setLoading(false);
       }
     };
     fetchRoles();
   }, [loading]);
 
-  console.log(roles);
   return (
     <>
+      <Toast ref={toastRef} />
+
       {user ? (
         <FiExternalLink
           className="cursor-pointer font-semibold text-blue-500"
-          onClick={onOpen}
+          onClick={() => setVisible(true)}
         />
       ) : (
-        <Button colorScheme={"orange"} onClick={onOpen}>
-          Add Role
-        </Button>
+        <Button
+          label="Add Role"
+          className="p-button-warning"
+          onClick={() => setVisible(true)}
+        />
       )}
 
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Add New Role</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <Input
-              name="name"
-              value={name}
-              onChange={(e) => setname(e.target.value)}
-              placeholder="Add new role"
-            />
-          </ModalBody>
-          {roles.length > 0 && (
-            <div className="mt-4  max-h-[300px] overflow-auto">
-              <TableContainer>
-                <Table variant="simple">
-                  <Thead>
-                    <Tr>
-                      {/* <Th>No</Th> */}
-                      <Th>Exsiting Role List</Th>
-                    </Tr>
-                  </Thead>
-                  <Tbody>
-                    {roles?.map((item, index) => (
-                      <Tr key={index}>
-                        {/* <Td>{index + 1}</Td> */}
-                        <Td>
-                          <div className="flex items-center gap-5 capitalize">
-                            {" "}
-                            <FaUser className="text-[20px] text-[#555555]" />
-                            <Text className="text-[14px] font-semibold">
-                              {item.name}
-                            </Text>
-                          </div>
-                        </Td>
-                      </Tr>
-                    ))}
-                  </Tbody>
-                </Table>
-              </TableContainer>
-            </div>
-          )}
-          <ModalFooter>
-            <Button mr={3} onClick={onClose}>
-              Cancel
-            </Button>
-            <Button
-              isLoading={loading}
-              loadingText="Adding role..."
-              spinnerPlacement="start"
-              colorScheme={"orange"}
-              onClick={addRole}
+      <Dialog
+        header="Add New Role"
+        visible={visible}
+        style={{ width: "50vw" }}
+        onHide={() => setVisible(false)}
+      >
+        <div className="field">
+          <InputText
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Add new role"
+            className="mb-3 w-full"
+          />
+        </div>
+
+        {roles.length > 0 && (
+          <div className="mt-4 max-h-[300px] overflow-auto">
+            <DataTable
+              value={roles}
+              header="Existing Role List"
+              responsiveLayout="scroll"
             >
-              Add Role
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+              <Column
+                body={(rowData) => (
+                  <div className="flex items-center gap-5 capitalize">
+                    <FaUser className="text-[20px] text-[#555555]" />
+                    <span className="text-[14px] font-semibold">
+                      {rowData.name}
+                    </span>
+                  </div>
+                )}
+              />
+            </DataTable>
+          </div>
+        )}
+
+        <div className="mt-3 flex justify-end gap-5">
+          <CanceButton onClick={() => setVisible(false)} />
+
+          <Button
+            label="Add Role"
+            className="p-button-warning"
+            loading={loading}
+            onClick={addRole}
+          />
+        </div>
+      </Dialog>
     </>
   );
 };

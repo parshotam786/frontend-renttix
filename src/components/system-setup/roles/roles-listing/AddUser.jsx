@@ -1,50 +1,45 @@
 "use client";
-import {
-  Button,
-  Input,
-  InputGroup,
-  InputRightElement,
-  Select,
-  Switch,
-  Text,
-  useToast,
-} from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
-import GoBackButton from "../../../Button/GoBackButton";
-import GoPrevious from "../../../Button/GoPrevious";
-import { FaEyeSlash, FaRegEye } from "react-icons/fa";
-import axios from "axios";
-import { BaseURL } from "../../../../utils/BaseUrl";
+import React, { useState, useEffect } from "react";
+import { Button } from "primereact/button";
+import { InputText } from "primereact/inputtext";
+import { Password } from "primereact/password";
+import { Dropdown } from "primereact/dropdown";
+import { Checkbox } from "primereact/checkbox";
+import { Toast } from "primereact/toast";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
-import { GoLinkExternal } from "react-icons/go";
-import AddRoleModal from "../role-permission/add-role-modal/AddRoleModal";
+import axios from "axios";
+import { BaseURL } from "../../../../../utils/baseUrl";
+import CanceButton from "@/components/Buttons/CanceButton";
+import { IconField } from "primereact/iconfield";
+import { InputIcon } from "primereact/inputicon";
+
+// import AddRoleModal from "../role-permission/add-role-modal/AddRoleModal";
 
 const AddUser = () => {
-  const [show, setShow] = useState(false);
-  const [loading, setloading] = useState(false);
-  const [error, seterror] = useState("");
-  const [roles, setroles] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [roles, setRoles] = useState([]);
   const [refreshFlag, setRefreshFlag] = useState(false);
+  const [show, setShow] = useState(false);
+  const handleClick = () => setShow(!show);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
-    permissions: ["Dashboard"],
     confirmPassword: "",
+    permissions: ["Dashboard"],
     role: "",
     isActive: true,
   });
-  const toast = useToast();
   const router = useRouter();
   const { token } = useSelector((state) => state?.authReducer);
+  const toast = React.useRef(null);
 
   const handleRefreshFlag = (value) => {
     setRefreshFlag(value);
   };
-  const handleClick = () => setShow(!show);
 
-  const handleChange = (e) => {
+  const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData({
       ...formData,
@@ -52,18 +47,15 @@ const AddUser = () => {
     });
   };
 
-  console.log(formData);
   const handlePermissionChange = (permission, isChecked, children = []) => {
     setFormData((prev) => {
       let updatedPermissions;
 
       if (isChecked) {
-        // Add parent and all children to permissions
         updatedPermissions = [
           ...new Set([...prev.permissions, permission, ...children]),
         ];
       } else {
-        // Remove parent and all its children from permissions
         updatedPermissions = prev.permissions.filter(
           (perm) => perm !== permission && !children.includes(perm),
         );
@@ -77,33 +69,33 @@ const AddUser = () => {
     const fetchRoles = async () => {
       try {
         const response = await axios.get(`${BaseURL}/roles/role`, {
-          headers: {
-            authorization: `Bearer ${token}`,
-          },
+          headers: { authorization: `Bearer ${token}` },
         });
-        setroles(response.data.data);
+        setRoles(response.data.data);
       } catch (err) {
-        seterror(err.message);
+        toast.current?.show({
+          severity: "error",
+          summary: "Error",
+          detail: err.message,
+        });
       } finally {
-        setloading(false);
+        setLoading(false);
       }
     };
     fetchRoles();
   }, [refreshFlag]);
 
   const handleSubmit = async () => {
-    setloading(true);
+    setLoading(true);
     try {
       const response = await axios.post(
         `${BaseURL}/sub-vendor/create-sub-user`,
         formData,
         {
-          headers: {
-            authorization: `Bearer ${token}`,
-          },
+          headers: { authorization: `Bearer ${token}` },
         },
       );
-      setloading(false);
+      setLoading(false);
       router.push("/system-setup/roles");
       setFormData({
         name: "",
@@ -114,24 +106,21 @@ const AddUser = () => {
         permissions: [],
         isActive: true,
       });
-      toast({
-        title: response.data?.message,
-        status: "success",
-        position: " top-right",
-        duration: 2000,
-        isClosable: true,
+      toast.current?.show({
+        severity: "success",
+        summary: "Success",
+        detail: response.data?.message,
       });
     } catch (error) {
-      setloading(false);
-      toast({
-        title: error.response.data.message,
-        status: "error",
-        position: " top-right",
-        duration: 2000,
-        isClosable: true,
+      setLoading(false);
+      toast.current?.show({
+        severity: "error",
+        summary: "Error",
+        detail: error.response.data.message,
       });
     }
   };
+
   const permissionsData = [
     {
       parent: "Add Product",
@@ -146,14 +135,13 @@ const AddUser = () => {
         "Delete Customer",
       ],
     },
-
     {
       parent: "Orders",
       children: [
         "Create Order",
         "Edit Order",
         "Book In Order",
-        "Book out Order",
+        "Book Out Order",
       ],
     },
     {
@@ -174,253 +162,220 @@ const AddUser = () => {
       children: [],
     },
   ];
+
   return (
-    <div>
-      <div className="w-full rounded-lg bg-white p-5 md:w-[50%]">
-        <div className="my-4">
-          <GoPrevious title={"/system-setup/roles"} />
+    <div className="w-full rounded-lg bg-white p-5 dark:bg-dark-2 md:w-[100%] lg:w-[100%] xl:w-[70%] 2xl:w-[70%]">
+      <Toast ref={toast} />
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-12">
+        <div class="col-span-12 p-4  lg:col-span-3 xl:col-span-3 ">
+          <h3 className="font-bold">User Detail</h3>
         </div>
-        <div className="">
-          <Text className="text-[20px] font-semibold">Add User Account</Text>
-          <hr className="mb-8 mt-3" />
-          <div className="flex flex-col gap-3">
-            <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-              <div className="flex flex-col gap-1">
-                <Text>Name</Text>
-                <Input
+        <div class="col-span-12 rounded-lg bg-white p-4 dark:bg-dark  md:col-span-12 lg:col-span-9 xl:col-span-9">
+          <div className="flex flex-col gap-4">
+            <div className="sm:grud grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div>
+                <label>Name</label>
+                <InputText
                   name="name"
-                  placeholder="Name"
                   value={formData.name}
-                  onChange={handleChange}
+                  onChange={handleInputChange}
+                  placeholder="Enter name"
+                  className="w-full"
                 />
               </div>
-              <div className="flex flex-col gap-1">
-                <Text>Email</Text>
-                <Input
+              <div>
+                <label>Email</label>
+                <InputText
                   name="email"
                   type="email"
-                  placeholder="Email"
                   value={formData.email}
-                  onChange={handleChange}
+                  onChange={handleInputChange}
+                  placeholder="Enter email"
+                  className="w-full"
                 />
               </div>
             </div>
-            <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-              <div className="flex flex-col gap-1">
-                <Text>Password</Text>
-                <InputGroup size="md">
-                  <Input
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div className="">
+                <label className="mb-2.5 block font-medium text-black dark:text-white">
+                  Password <span className="text-red">*</span>
+                </label>
+                <IconField>
+                  {show ? (
+                    <InputIcon
+                      onClick={handleClick}
+                      className="pi pi-eye"
+                    ></InputIcon>
+                  ) : (
+                    <InputIcon
+                      onClick={handleClick}
+                      className="pi pi-eye-slash"
+                    ></InputIcon>
+                  )}
+                  <InputText
+                    value={formData.password}
+                    onChange={handleInputChange}
                     name="password"
                     pr="4.5rem"
+                    className="w-full"
                     type={show ? "text" : "password"}
                     placeholder="Enter password"
-                    value={formData.password}
-                    onChange={handleChange}
                   />
-                  <InputRightElement width="4.5rem">
-                    {show ? (
-                      <FaRegEye onClick={handleClick} />
-                    ) : (
-                      <FaEyeSlash onClick={handleClick} />
-                    )}
-                  </InputRightElement>
-                </InputGroup>
+                </IconField>
               </div>
-              <div className="flex flex-col gap-1">
-                <Text>Confirm Password</Text>
-                <InputGroup size="md">
-                  <Input
+              <div className=" ">
+                <label className="mb-2.5 block font-medium text-black dark:text-white">
+                  Confrim Password <span className="text-red">*</span>
+                </label>
+                <IconField>
+                  {show ? (
+                    <InputIcon
+                      onClick={handleClick}
+                      className="pi pi-eye"
+                    ></InputIcon>
+                  ) : (
+                    <InputIcon
+                      onClick={handleClick}
+                      className="pi pi-eye-slash"
+                    ></InputIcon>
+                  )}
+                  <InputText
+                    onChange={handleInputChange}
+                    value={formData.confirmPassword}
+                    className="w-full"
                     name="confirmPassword"
+                    placeholder="Confrim Password"
                     pr="4.5rem"
                     type={show ? "text" : "password"}
-                    placeholder="Confirm Password"
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
                   />
-                  <InputRightElement width="4.5rem">
-                    {show ? (
-                      <FaRegEye onClick={handleClick} />
-                    ) : (
-                      <FaEyeSlash onClick={handleClick} />
-                    )}
-                  </InputRightElement>
-                </InputGroup>
-                {formData.confirmPassword.length > 0 && (
-                  <Text
-                    className={`font-semibold ${
-                      formData.password === formData.confirmPassword
-                        ? "text-green-600"
-                        : "text-red"
-                    }`}
+                </IconField>
+
+                {formData.password !== "" && (
+                  <h3
+                    className={
+                      formData.password != formData.confirmPassword
+                        ? "text-[16px] text-red"
+                        : "text-[16px] font-semibold text-green-600"
+                    }
                   >
-                    {formData.password === formData.confirmPassword
-                      ? "Password Match!"
-                      : "Password does not match!"}
-                  </Text>
+                    {formData.confirmPassword !== ""
+                      ? formData.password != formData.confirmPassword
+                        ? "Passwords Do Not Match!"
+                        : "Passwords Match!"
+                      : ""}
+                  </h3>
                 )}
               </div>
+              {/* <div>
+            <label>Password</label>
+            <Password
+              name="password"
+              value={formData.password}
+              onChange={handleInputChange}
+              toggleMask
+              placeholder="Enter password"
+              className="w-full"
+            />
+          </div>
+          <div>
+            <label>Confirm Password</label>
+            <Password
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleInputChange}
+              toggleMask
+              placeholder="Confirm password"
+              className="w-full"
+            />
+          </div> */}
             </div>
             <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-              <div className="flex flex-col gap-1">
-                <div className="flex items-center gap-1">
-                  <Text>Role</Text>{" "}
-                  <AddRoleModal refreshFlag={handleRefreshFlag} user={true} />
-                </div>
-                <Select
+              <div>
+                <label>Role</label>
+                <Dropdown
                   name="role"
-                  placeholder="Select Role"
                   value={formData.role}
-                  onChange={handleChange}
-                >
-                  {roles?.map((item, index) => (
-                    <option key={index} value={item.name}>
-                      {item.name}
-                    </option>
-                  ))}
-                </Select>
-              </div>
-              <div className="flex flex-col gap-1">
-                <Text>Active</Text>
-                <Switch
-                  colorScheme="green"
-                  size="lg"
-                  name="isActive"
-                  isChecked={formData.isActive}
-                  onChange={handleChange}
+                  onChange={handleInputChange}
+                  options={roles.map((role) => ({
+                    label: role.name,
+                    value: role.name,
+                  }))}
+                  placeholder="Select role"
+                  className="w-full"
                 />
               </div>
-            </div>
-            <div className="flex flex-col gap-4">
-              <Text className="mt-4 text-[18px] font-semibold">
-                Allow Permission
-              </Text>
-
-              {/* <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-2 gap-3 gap-x-20">
-                {[
-                  "Add Product",
-                  "Edit Product",
-                  "Delete Product",
-                  "All Product",
-                  "Orders",
-                  "Invoicing",
-                  "Customer",
-                  "Edit Customer",
-                  "Delete Customer",
-                  "System Setup",
-                ]
-                  .filter((permission) => {
-                    // Show "Edit Product" and "Delete Product" only if "Add Product" is checked
-                    if (
-                      (permission === "Edit Product" ||
-                        permission === "Delete Product") &&
-                      !formData.permissions.includes("Add Product")
-                    ) {
-                      return false;
-                    }
-
-                    // Show "Edit Customer" and "Delete Customer" only if "Customer" is checked
-                    if (
-                      (permission === "Edit Customer" ||
-                        permission === "Delete Customer") &&
-                      !formData.permissions.includes("Customer")
-                    ) {
-                      return false;
-                    }
-
-                    return true;
-                  })
-                  .map((permission) => (
-                    <div
-                      key={permission}
-                      className="flex items-center justify-between gap-1"
-                    >
-                      <Text className="font-semibold">{permission}</Text>
-                      <Switch
-                        size="lg"
-                        colorScheme="green"
-                        isChecked={formData.permissions.includes(permission)}
-                        onChange={(e) =>
-                          handlePermissionChange(permission, e.target.checked)
-                        }
-                      />
-                    </div>
-                  ))}
-              </div> */}
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-3 lg:grid-cols-2">
-                {permissionsData.map(({ parent, children }) => (
-                  <div key={parent} className="rounded-lg border p-4 shadow">
-                    <div className="flex items-center justify-between gap-1">
-                      <Text className="font-semibold">{parent}</Text>
-                      <Switch
-                        size="lg"
-                        colorScheme="green"
-                        isChecked={formData.permissions.includes(parent)}
-                        onChange={(e) =>
-                          handlePermissionChange(
-                            parent,
-                            e.target.checked,
-                            children,
-                          )
-                        }
-                      />
-                    </div>
-
-                    {formData.permissions.includes(parent) &&
-                      children.length > 0 && (
-                        <div className="mt-4 pl-6">
-                          {children.map((child, index) => (
-                            <div
-                              key={child}
-                              className="flex items-center justify-between gap-1"
-                            >
-                              <Text className="font-medium">
-                                <span>{index + 1}.</span>
-                                <span className="ml-3 text-[14px]">
-                                  {child}
-                                </span>
-                              </Text>
-                              <Switch
-                                size="md"
-                                colorScheme="green"
-                                isChecked={formData.permissions.includes(child)}
-                                onChange={(e) =>
-                                  handlePermissionChange(
-                                    child,
-                                    e.target.checked,
-                                  )
-                                }
-                              />
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                  </div>
-                ))}
+              <div>
+                <div className="">
+                  <label htmlFor="">Status</label>
+                </div>
+                <Checkbox
+                  inputId="active"
+                  name="isActive"
+                  checked={formData.isActive}
+                  onChange={handleInputChange}
+                />
+                <label htmlFor="active" className="ml-2">
+                  Active
+                </label>
               </div>
             </div>
-            <div className="mt-4 flex justify-end">
-              <div className="flex gap-3 ">
-                <GoBackButton title={"Cancel"} />
-                <div className="">
-                  <Button
-                    isLoading={loading}
-                    spinnerPlacement="start"
-                    loadingText="Submitting..."
-                    isDisabled={
-                      formData.name === "" ||
-                      formData.email === "" ||
-                      formData.password === "" ||
-                      formData.confirmPassword === "" ||
-                      formData.role === "" ||
-                      formData.isActive === "" ||
-                      formData.password != formData.confirmPassword
-                    }
-                    colorScheme={"orange"}
-                    onClick={handleSubmit}
-                  >
-                    Add Account
-                  </Button>
+          </div>
+        </div>
+      </div>
+      <hr />
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-12">
+        <div class="col-span-12 p-4  lg:col-span-3 xl:col-span-3 ">
+          <h3 className="font-bold">Allow Permissions</h3>
+        </div>
+        <div class="col-span-12 rounded-lg bg-white p-4 dark:bg-dark  md:col-span-12 lg:col-span-9 xl:col-span-9">
+          <div className="grid">
+            <div>
+              {permissionsData.map(({ parent, children }) => (
+                <div key={parent} className="mt-4">
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      inputId={parent}
+                      checked={formData.permissions.includes(parent)}
+                      onChange={(e) =>
+                        handlePermissionChange(parent, e.checked, children)
+                      }
+                    />
+                    <label htmlFor={parent} className="font-medium">
+                      {parent}
+                    </label>
+                  </div>
+                  {formData.permissions.includes(parent) && (
+                    <div className="ml-6">
+                      {children.map((child) => (
+                        <div
+                          key={child}
+                          className="mt-2 flex items-center gap-2"
+                        >
+                          <Checkbox
+                            inputId={child}
+                            checked={formData.permissions.includes(child)}
+                            onChange={(e) =>
+                              handlePermissionChange(child, e.checked)
+                            }
+                          />
+                          <label htmlFor={child}>{child}</label>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
+              ))}
+            </div>
+            <div className="flex justify-end">
+              <div className="flex gap-5">
+                <div className="">
+                  <CanceButton onClick={() => router.back()} />
+                </div>
+                <Button
+                  label={loading ? "Submitting..." : "Submit"}
+                  onClick={handleSubmit}
+                  className="p-button-success w-full"
+                />
               </div>
             </div>
           </div>
