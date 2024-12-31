@@ -5,6 +5,7 @@ import ClickOutside from "@/components/ClickOutside";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 import { setLogoutUser } from "@/store/authSlice";
+import { Avatar } from "primereact/avatar";
 
 const DropdownUser = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -28,13 +29,19 @@ const DropdownUser = () => {
         href="#"
       >
         <span className="h-12 w-12 rounded-full">
-          <Image
+          <Avatar
+            image={`${imageBaseURL}${user?.profile_Picture}`}
+            size="large"
+            shape="circle"
+          />
+
+          {/* <Image
             width={112}
             height={112}
             src={`${imageBaseURL}${user?.profile_Picture}`}
             alt="User"
             className="h-12 w-12 overflow-hidden rounded-full "
-          />
+          /> */}
         </span>
 
         <span className="flex items-center gap-2 font-medium text-dark dark:text-dark-6">
@@ -70,12 +77,10 @@ const DropdownUser = () => {
         >
           <div className="flex items-center gap-2.5 px-5 pb-5.5 pt-3.5">
             <span className="relative block h-12 w-12 rounded-full">
-              <Image
-                width={112}
-                height={112}
-                src={`${imageBaseURL}${user?.profile_Picture}`}
-                alt="User"
-                className="h-12 w-12 overflow-hidden rounded-full "
+              <Avatar
+                image={`${imageBaseURL}${user?.profile_Picture}`}
+                size="large"
+                shape="circle"
               />
 
               <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white bg-green dark:border-gray-dark"></span>

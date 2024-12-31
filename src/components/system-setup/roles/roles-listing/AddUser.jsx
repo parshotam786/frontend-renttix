@@ -174,7 +174,9 @@ const AddUser = () => {
           <div className="flex flex-col gap-4">
             <div className="sm:grud grid grid-cols-1 gap-4 md:grid-cols-2">
               <div>
-                <label>Name</label>
+                <label className=" text-[0.9em] font-bold text-black">
+                  Name
+                </label>
                 <InputText
                   name="name"
                   value={formData.name}
@@ -184,7 +186,9 @@ const AddUser = () => {
                 />
               </div>
               <div>
-                <label>Email</label>
+                <label className=" text-[0.9em] font-bold text-black">
+                  Email
+                </label>
                 <InputText
                   name="email"
                   type="email"
@@ -197,7 +201,7 @@ const AddUser = () => {
             </div>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="">
-                <label className="mb-2.5 block font-medium text-black dark:text-white">
+                <label className=" text-[0.9em] font-bold text-black">
                   Password <span className="text-red">*</span>
                 </label>
                 <IconField>
@@ -224,7 +228,7 @@ const AddUser = () => {
                 </IconField>
               </div>
               <div className=" ">
-                <label className="mb-2.5 block font-medium text-black dark:text-white">
+                <label className=" text-[0.9em] font-bold text-black">
                   Confrim Password <span className="text-red">*</span>
                 </label>
                 <IconField>
@@ -267,7 +271,7 @@ const AddUser = () => {
                 )}
               </div>
               {/* <div>
-            <label>Password</label>
+            <label className=" text-[0.9em] font-bold text-black">Password</label>
             <Password
               name="password"
               value={formData.password}
@@ -278,7 +282,7 @@ const AddUser = () => {
             />
           </div>
           <div>
-            <label>Confirm Password</label>
+            <label className=" text-[0.9em] font-bold text-black">Confirm Password</label>
             <Password
               name="confirmPassword"
               value={formData.confirmPassword}
@@ -291,7 +295,9 @@ const AddUser = () => {
             </div>
             <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
               <div>
-                <label>Role</label>
+                <label className=" text-[0.9em] font-bold text-black">
+                  Role
+                </label>
                 <Dropdown
                   name="role"
                   value={formData.role}
@@ -304,19 +310,29 @@ const AddUser = () => {
                   className="w-full"
                 />
               </div>
-              <div>
+              <div className="flex flex-col gap-2">
                 <div className="">
-                  <label htmlFor="">Status</label>
+                  <label
+                    className=" text-[0.9em] font-bold text-black"
+                    htmlFor=""
+                  >
+                    Status
+                  </label>
                 </div>
-                <Checkbox
-                  inputId="active"
-                  name="isActive"
-                  checked={formData.isActive}
-                  onChange={handleInputChange}
-                />
-                <label htmlFor="active" className="ml-2">
-                  Active
-                </label>
+                <div className="flex">
+                  <Checkbox
+                    inputId="active"
+                    name="isActive"
+                    checked={formData.isActive}
+                    onChange={handleInputChange}
+                  />
+                  <label
+                    className=" ml-2 text-[0.9em] font-bold text-black"
+                    htmlFor="active"
+                  >
+                    Active
+                  </label>
+                </div>
               </div>
             </div>
           </div>
@@ -340,7 +356,10 @@ const AddUser = () => {
                         handlePermissionChange(parent, e.checked, children)
                       }
                     />
-                    <label htmlFor={parent} className="font-medium">
+                    <label
+                      className=" text-[0.9em] font-bold text-black"
+                      htmlFor={parent}
+                    >
                       {parent}
                     </label>
                   </div>
@@ -358,7 +377,12 @@ const AddUser = () => {
                               handlePermissionChange(child, e.checked)
                             }
                           />
-                          <label htmlFor={child}>{child}</label>
+                          <label
+                            className=" text-[0.9em] font-bold text-black"
+                            htmlFor={child}
+                          >
+                            {child}
+                          </label>
                         </div>
                       ))}
                     </div>

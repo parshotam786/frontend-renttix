@@ -223,23 +223,29 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
   const [pageName, setPageName] = useLocalStorage("selectedMenu", "dashboard");
 
   const pathname = usePathname();
-  const { user } = useSelector((state) => state?.authReducer);
+  const { user, role } = useSelector((state) => state?.authReducer);
+
   const permission = user?.permissions;
-  console.log(user?.permissions);
+
+  user?.permission?.push("Profile");
   const filterMenuByPermissions = (menuGroups, permission) => {
     return menuGroups.map((group) => {
       const filteredMenuItems = group.menuItems
         .map((item) => {
           // Check if the main label is in permissions
-          if (!permission?.includes(item?.label)) {
+          if (
+            ["Seller", "Admin"].includes(role)
+              ? !permission?.includes(item.label)
+              : permission?.includes(item.label)
+          ) {
             return item;
           }
           // Check children if they exist
           if (item.children) {
-            const filteredChildren = item.children.filter(
-              (child) => !permission?.includes(child.label),
+            const filteredChildren = item.children.filter((child) =>
+              permission?.includes(child.label),
             );
-            if (filteredChildren.length > 0) {
+            if (filteredChildren?.length > 0) {
               return { ...item, children: filteredChildren };
             }
           }

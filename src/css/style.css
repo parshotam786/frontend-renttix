@@ -122,6 +122,11 @@
 .p-inputgroup .p-inputtext {
   @apply border-none;
 }
+
+/* hide use role table header */
+.custom-datatable .p-datatable-thead {
+  display: none;
+}
 @layer tailwind-utilities {
   @tailwind components;
   @tailwind utilities;

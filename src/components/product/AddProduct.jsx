@@ -14,6 +14,8 @@ import { RadioButton } from "primereact/radiobutton";
 import Link from "next/link";
 import { Toast } from "primereact/toast";
 import { Button } from "primereact/button";
+import InputGroup from "../FormElements/InputGroup";
+import SelectGroupOne from "../FormElements/SelectGroup/SelectGroupOne";
 
 const AddProduct = () => {
   const [status, setStatus] = useState("Rental");
@@ -30,7 +32,8 @@ const AddProduct = () => {
     productName: "",
     companyProductName: "",
     productDescription: "",
-    // category: categoryValue._id,
+    subCategory: "",
+    category: "",
     // minHireTime: "",
     rentPrice: "",
     // rentDuration: "",
@@ -119,12 +122,12 @@ const AddProduct = () => {
   useEffect(() => {
     const fetchSubCategories = async () => {
       const selectedCategory = categories.find(
-        (item) => item._id === categoryValue._id,
+        (item) => item._id === formData.category,
       );
       if (selectedCategory) {
         try {
           const response = await axios.get(
-            `${BaseURL}/sub-category?parentId=${categoryValue._id}`,
+            `${BaseURL}/sub-category?parentId=${formData.category}`,
           );
           setSubCategories(response?.data);
         } catch (err) {
@@ -136,10 +139,10 @@ const AddProduct = () => {
     };
 
     console.log(formData);
-    if (categoryValue) {
+    if (formData.category) {
       fetchSubCategories();
     }
-  }, [categoryValue, categories]);
+  }, [formData.category, categories]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -159,8 +162,8 @@ const AddProduct = () => {
     productData.append("vendorId", id);
 
     productData.append("status", showstatus);
-    productData.append("category", categoryValue._id);
-    productData.append("subCategory", subCategoryValue._id);
+    // productData.append("category", categoryValue._id);
+    // productData.append("subCategory", subCategoryValue._id);
     productData.append("taxClass", taxClassValue._id);
     if (status != "Sale") {
       productData.append("rateDefinition", rateDefinitionValue._id);
@@ -189,9 +192,9 @@ const AddProduct = () => {
           productName: "",
           companyProductName: "",
           productDescription: "",
-          // category: "",
+          category: "",
           // taxClass: "",
-          // subCategory: "",
+          subCategory: "",
           // rateDefinition: "",
           rentPrice: "",
           rentDuration: "",
@@ -286,10 +289,9 @@ const AddProduct = () => {
         <div class="col-span-8 bg-white p-4 dark:bg-[#122031] md:col-span-8 lg:col-span-8 xl:col-span-5">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2">
             <div className="">
-              <label className="mt-2.5 block text-[0.9em] font-bold  text-black">
-                Product Name {isRequired()}
-              </label>
-              <InputText
+              <InputGroup
+                required
+                label={" Product Name"}
                 name="productName"
                 placeholder="Product Name"
                 value={formData.productName}
@@ -305,10 +307,9 @@ const AddProduct = () => {
                 : ""}
             </div>
             <div className="">
-              <label className="mt-2.5 block text-[0.9em] font-bold text-black">
-                Company Product Name {isRequired()}
-              </label>
-              <InputText
+              <InputGroup
+                required
+                label={"Company Product Name"}
                 name="companyProductName"
                 placeholder="Company Product Name"
                 value={formData.companyProductName}
@@ -334,7 +335,7 @@ const AddProduct = () => {
                   formData.productName == "" ? "hidden" : "block"
                 } `}
               >
-                <label className="text-[0.9em]">Write with AI?</label>
+                <label className="mb-2 text-[0.9em]">Write with AI?</label>
 
                 <>
                   {promptLoader ? (
@@ -358,13 +359,17 @@ const AddProduct = () => {
                 </>
               </div>
             </div>
-            <InputTextarea
-              rows={6}
-              name="productDescription"
-              placeholder="Product Description"
-              value={formData.productDescription}
-              onChange={handleChange}
-            />
+            <div>
+              <textarea
+                rows={6}
+                name="productDescription"
+                placeholder="Product Description"
+                value={formData.productDescription}
+                onChange={handleChange}
+                className="w-full rounded-[7px] border-[1.5px] border-stroke bg-transparent px-5.5 py-3 text-dark outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-gray-2 dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary"
+              />
+            </div>
+
             {openAiError !== "" && (
               <label className="text-[0.8em] text-red">{openAiError}</label>
             )}
@@ -379,10 +384,16 @@ const AddProduct = () => {
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2">
             <div className="">
               <div className="">
-                <label className="mt-2.5 block text-[0.9em] font-bold text-black">
-                  Category Type {isRequired()}
-                </label>
-                <Dropdown
+                <SelectGroupOne
+                  onChange={handleChange}
+                  type="text"
+                  value={formData.category}
+                  placeholder="Category Type"
+                  name="category"
+                  data={categories}
+                  title=" Category Type"
+                />
+                {/* <Dropdown
                   value={categoryValue}
                   onChange={(e) => setcategoryValue(e.value)}
                   options={categories}
@@ -392,7 +403,7 @@ const AddProduct = () => {
                   className="md:w-14rem w-full text-[0.9em]"
                   checkmark={true}
                   highlightOnSelect={false}
-                />
+                /> */}
 
                 {error && formData.category == ""
                   ? formData.category == "" && (
@@ -405,20 +416,14 @@ const AddProduct = () => {
             </div>
             <div className="">
               <div className="">
-                <label className="mt-2.5 block text-[0.9em] font-bold text-black">
-                  Sub Category Type {isRequired()}
-                </label>
-
-                <Dropdown
-                  value={subCategoryValue}
-                  onChange={(e) => setSubcategoryValue(e.value)}
-                  options={subCategories}
-                  optionLabel="name"
+                <SelectGroupOne
+                  onChange={handleChange}
+                  type="text"
+                  value={formData.subCategory}
                   placeholder="Sub Category Type"
                   name="subCategory"
-                  className="md:w-14rem w-full text-[0.9em]"
-                  checkmark={true}
-                  highlightOnSelect={false}
+                  data={subCategories}
+                  title="Sub Category Type"
                 />
 
                 {error && formData.subCategory == ""

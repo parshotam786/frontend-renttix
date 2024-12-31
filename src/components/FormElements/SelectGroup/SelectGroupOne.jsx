@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 
-const SelectGroupOne = () => {
+const SelectGroupOne = ({ title, data, onChange, type, name }) => {
   const [selectedOption, setSelectedOption] = useState("");
   const [isOptionSelected, setIsOptionSelected] = useState(false);
 
@@ -11,33 +11,27 @@ const SelectGroupOne = () => {
 
   return (
     <div className="mb-4.5">
-      <label className="mb-3 block text-body-sm text-dark dark:text-white">
-        Subject
+      <label className="text-body-md bold mb-3 font-medium text-dark dark:text-white">
+        {title}
       </label>
 
       <div className="relative z-20 bg-transparent dark:bg-dark-2">
         <select
           value={selectedOption}
-          onChange={(e) => {
-            setSelectedOption(e.target.value);
-            changeTextColor();
-          }}
+          name={name}
+          type={type}
+          onChange={onChange}
           className={`relative z-20 w-full appearance-none rounded-[7px] border border-stroke bg-transparent px-5.5 py-3 outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary ${
             isOptionSelected ? "text-dark dark:text-white" : ""
           }`}
         >
-          <option value="" disabled className="text-dark-6">
-            Select your subject
-          </option>
-          <option value="USA" className="text-dark-6">
-            USA
-          </option>
-          <option value="UK" className="text-dark-6">
-            UK
-          </option>
-          <option value="Canada" className="text-dark-6">
-            Canada
-          </option>
+          {data.map((item) => (
+            <>
+              <option value={item._id} className="text-dark-6">
+                {item.name}
+              </option>
+            </>
+          ))}
         </select>
 
         <span className="absolute right-4 top-1/2 z-30 -translate-y-1/2">

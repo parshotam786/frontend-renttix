@@ -13,6 +13,7 @@ const page = () => {
   return (
     <div>
       <NavigationBar />
+
       <TopHeader />
       <LandingSection />
       <MapSection />

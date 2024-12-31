@@ -14,6 +14,8 @@ import { FaUser } from "react-icons/fa";
 import { FiExternalLink } from "react-icons/fi";
 import { BaseURL } from "../../../../../../utils/baseUrl";
 import CanceButton from "@/components/Buttons/CanceButton";
+import { Avatar } from "primereact/avatar";
+import { ScrollTop } from "primereact/scrolltop";
 
 const AddRoleModal = ({ user, refreshFlag }) => {
   const [visible, setVisible] = useState(false);
@@ -108,7 +110,7 @@ const AddRoleModal = ({ user, refreshFlag }) => {
         style={{ width: "50vw" }}
         onHide={() => setVisible(false)}
       >
-        <div className="field">
+        <div className="field mb-5">
           <InputText
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -116,18 +118,24 @@ const AddRoleModal = ({ user, refreshFlag }) => {
             className="mb-3 w-full"
           />
         </div>
-
+        <label htmlFor="" className=" font-semibold text-dark-2">
+          Existing Role List
+        </label>
+        <hr />
         {roles.length > 0 && (
-          <div className="mt-4 max-h-[300px] overflow-auto">
+          <div className=" max-h-[300px] overflow-auto">
             <DataTable
               value={roles}
-              header="Existing Role List"
+              // header="Existing Role List"
+              className="custom-datatable"
               responsiveLayout="scroll"
             >
               <Column
                 body={(rowData) => (
                   <div className="flex items-center gap-5 capitalize">
-                    <FaUser className="text-[20px] text-[#555555]" />
+                    <Avatar icon="pi pi-user" size="large" shape="circle" />
+
+                    {/* <FaUser className="text-[20px] text-[#555555]" /> */}
                     <span className="text-[14px] font-semibold">
                       {rowData.name}
                     </span>
@@ -135,6 +143,12 @@ const AddRoleModal = ({ user, refreshFlag }) => {
                 )}
               />
             </DataTable>
+            <ScrollTop
+              target="parent"
+              threshold={100}
+              className="w-2rem h-2rem border-round bg-primary"
+              icon="pi pi-arrow-up text-base"
+            />
           </div>
         )}
 
